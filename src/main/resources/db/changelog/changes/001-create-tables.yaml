@@ -1,0 +1,243 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-chemical-item-table
+      author: Tarasov Aleksey
+      changes:
+        - createTable:
+            tableName: chemical_item
+            columns:
+              - column:
+                  name: id
+                  type: INTEGER
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: fabricator
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: category
+                  type: VARCHAR(32)
+              - column:
+                  name: metric
+                  type: VARCHAR(32)
+              - column:
+                  name: amount
+                  type: DOUBLE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: price
+                  type: DOUBLE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: date_of_purchase
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: end_date
+                  type: DATE
+
+  - changeSet:
+      id: 002-create-electrical-table
+      author: Tarasov Aleksey
+      changes:
+        - createTable:
+            tableName: electrical_item
+            columns:
+              - column:
+                  name: id
+                  type: INTEGER
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: fabricator
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: category
+                  type: VARCHAR(32)
+              - column:
+                  name: metric
+                  type: VARCHAR(32)
+              - column:
+                  name: amount
+                  type: DOUBLE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: price
+                  type: DOUBLE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: date_of_purchase
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: warranty_end_date
+                  type: DATE
+
+  - changeSet:
+      id: 003-create-food-item-table
+      author: Tarasov Aleksey
+      changes:
+        - createTable:
+            tableName: food_item
+            columns:
+              - column:
+                  name: id
+                  type: INTEGER
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: fabricator
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: category
+                  type: VARCHAR(32)
+              - column:
+                  name: metric
+                  type: VARCHAR(32)
+              - column:
+                  name: amount
+                  type: DOUBLE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: price
+                  type: DOUBLE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: date_of_purchase
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: date_of_production
+                  type: DATE
+              - column:
+                  name: date_of_eaten
+                  type: DATE
+
+  - changeSet:
+      id: 004-create-furniture-item-table
+      author: Tarasov Aleksey
+      changes:
+        - createTable:
+            tableName: furniture_item
+            columns:
+              - column:
+                  name: id
+                  type: INTEGER
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: fabricator
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: category
+                  type: VARCHAR(32)
+              - column:
+                  name: metric
+                  type: VARCHAR(32)
+              - column:
+                  name: amount
+                  type: DOUBLE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: price
+                  type: DOUBLE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: date_of_purchase
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: 000-create-hibernate-sequences
+      author: system
+      changes:
+        - createTable:
+            tableName: hibernate_sequences
+            columns:
+              - column:
+                  name: sequence_name
+                  type: VARCHAR(255)
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: next_val
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+        - insert:
+            tableName: hibernate_sequences
+            columns:
+              - column:
+                  name: sequence_name
+                  value: item_seq
+              - column:
+                  name: next_val
+                  valueNumeric: 1

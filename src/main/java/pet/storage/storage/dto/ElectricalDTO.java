@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import pet.storage.storage.dto.abstract_classes.ItemDTO;
+import pet.storage.storage.model.enum_classes.Category;
+import pet.storage.storage.model.enum_classes.Metric;
 
 import java.time.LocalDate;
 
@@ -12,4 +14,11 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class ElectricalDTO extends ItemDTO {
     private LocalDate warrantyEndDate;
+
+    public ElectricalDTO(String name, String fabricator, Category category, Metric metric, double amount,
+                         double price, LocalDate dateOfPurchase, String description,
+                         LocalDate warrantyEndDate) {
+        super(name, fabricator, category, metric, amount, price, dateOfPurchase, description);
+        this.warrantyEndDate = warrantyEndDate;
+    }
 }

@@ -2,7 +2,6 @@ package pet.storage.storage.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,7 +14,6 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Entity
-@AllArgsConstructor
 @NoArgsConstructor
 public class FoodItem extends Item {
 
@@ -25,17 +23,10 @@ public class FoodItem extends Item {
     @Column(name = "date_of_eaten")
     private LocalDate dateOfEaten;
 
-    public FoodItem(String name, String description, int price, LocalDate dateOfProduction, LocalDate dateOfEaten,
-                    String fabricator, Category category, Metric metric, double amount, LocalDate dateOfPurchase) {
-        this.name = name;
-        this.description = description;
-        this.price = price;
-        this.dateOfProduction = dateOfProduction;
+    public FoodItem(String name, String fabricator, Category category, Metric metric, double amount,
+                    double price, LocalDate dateOfPurchase, String description, LocalDate dateOfEaten) {
+
+        super(name, fabricator, category, metric, amount, price, dateOfPurchase, description);
         this.dateOfEaten = dateOfEaten;
-        this.fabricator = fabricator;
-        this.category = category;
-        this.metric = metric;
-        this.amount = amount;
-        this.dateOfPurchase = dateOfPurchase;
     }
 }

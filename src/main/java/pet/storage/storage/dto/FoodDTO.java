@@ -18,17 +18,11 @@ public class FoodDTO extends ItemDTO {
 
     private LocalDate dateOfEaten;
 
-    public FoodDTO(String name, String description, int price, LocalDate dateOfProduction, LocalDate dateOfEaten,
-                    String fabricator, Category category, Metric metric, double amount, LocalDate dateOfPurchase) {
-        this.name = name;
-        this.description = description;
-        this.price = price;
+    public FoodDTO(String name, String fabricator, Category category, Metric metric, double amount,
+                   double price, LocalDate dateOfPurchase, String description,
+                   LocalDate dateOfProduction, LocalDate dateOfEaten) {
+        super(name, fabricator, category, metric, amount, price, dateOfPurchase, description);
         this.dateOfProduction = dateOfProduction;
         this.dateOfEaten = dateOfEaten;
-        this.fabricator = fabricator;
-        this.category = category;
-        this.metric = metric;
-        this.amount = amount;
-        this.dateOfPurchase = dateOfPurchase;
     }
 }

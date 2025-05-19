@@ -3,6 +3,7 @@ package pet.storage.storage.model.abstract_classes;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import pet.storage.storage.model.enum_classes.Category;
 import pet.storage.storage.model.enum_classes.Metric;
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @MappedSuperclass
+@NoArgsConstructor
 public abstract class Item {
 
     @Id
@@ -43,4 +45,16 @@ public abstract class Item {
 
     @Column(nullable = false, name = "description")
     protected String description;
+
+    public Item(String name, String fabricator, Category category, Metric metric, double amount,
+                double price, LocalDate dateOfPurchase, String description) {
+        this.name = name;
+        this.fabricator = fabricator;
+        this.category = category;
+        this.metric = metric;
+        this.amount = amount;
+        this.price = price;
+        this.dateOfPurchase = dateOfPurchase;
+        this.description = description;
+    }
 }

@@ -3,47 +3,69 @@ package pet.storage.storage.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pet.storage.storage.dto.FoodDTO;
+import pet.storage.storage.model.FoodItem;
 import pet.storage.storage.repository.FoodRepository;
+import pet.storage.storage.utility.converter.FoodDtoToEntityConverter;
+import pet.storage.storage.utility.converter.FoodEntityToDtoConverter;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class FoodCrudService implements CrudService<FoodDTO> {
 
     private final FoodRepository foodRepository;
+    private final FoodEntityToDtoConverter foodEntityToDtoConverter;
+    private final FoodDtoToEntityConverter foodDtoToEntityConverter;
 
     @Autowired
     public FoodCrudService(FoodRepository foodRepository) {
         this.foodRepository = foodRepository;
+        this.foodEntityToDtoConverter = new FoodEntityToDtoConverter();
+        this.foodDtoToEntityConverter = new FoodDtoToEntityConverter();
     }
 
     @Override
     public FoodDTO findById(int id) {
-        return null;
+        return foodEntityToDtoConverter.convert(foodRepository.findById(id).orElseThrow());
     }
 
     @Override
     public FoodDTO findByName(String name) {
-        return null;
+        return foodEntityToDtoConverter.convert(foodRepository.findByName(name));
     }
 
     @Override
     public List<FoodDTO> findAll() {
-        return List.of();
+        List<FoodItem> foodDTOList = foodRepository.findAll();
+        return foodDTOList.stream().map(foodEntityToDtoConverter::convert).collect(Collectors.toList());
     }
 
     @Override
     public void save(FoodDTO foodDTO) {
-
+        foodRepository.save(foodDtoToEntityConverter.convert(foodDTO));
     }
 
     @Override
     public void update(FoodDTO foodDTO) {
+        FoodItem foodItem = foodRepository.findByName(foodDTO.getName());
 
+        foodItem.setAmount(foodDTO.getAmount());
+        foodItem.setFabricator(foodDTO.getFabricator());
+        foodItem.setMetric(foodDTO.getMetric());
+        foodItem.setDescription(foodDTO.getDescription());
+        foodItem.setPrice(foodDTO.getPrice());
+        foodItem.setDateOfPurchase(foodDTO.getDateOfPurchase());
+        foodItem.setCategory(foodDTO.getCategory());
+        foodItem.setDateOfProduction(foodDTO.getDateOfProduction());
+        foodItem.setDateOfEaten(foodDTO.getDateOfEaten());
+
+        foodRepository.save(foodItem);
     }
 
     @Override
     public void delete(int id) {
-
+        foodRepository.deleteById(id);
     }
 }

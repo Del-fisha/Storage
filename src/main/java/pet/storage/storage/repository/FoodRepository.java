@@ -6,4 +6,5 @@ import pet.storage.storage.model.FoodItem;
 
 @Repository
 public interface FoodRepository extends JpaRepository<FoodItem, Integer> {
+    FoodItem findByName(String name);
 }

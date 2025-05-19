@@ -2,11 +2,15 @@ package pet.storage.storage.model.abstract_classes;
 
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 import pet.storage.storage.model.enum_classes.Category;
 import pet.storage.storage.model.enum_classes.Metric;
 
 import java.time.LocalDate;
 
+@Getter
+@Setter
 @MappedSuperclass
 public abstract class Item {
 

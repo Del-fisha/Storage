@@ -1,12 +1,9 @@
-package pet.storage.storage.model;
+package pet.storage.storage.dto;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import pet.storage.storage.model.abstract_classes.Item;
+import pet.storage.storage.dto.abstract_classes.ItemDTO;
 import pet.storage.storage.model.enum_classes.Category;
 import pet.storage.storage.model.enum_classes.Metric;
 
@@ -14,18 +11,14 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
-@Entity
-@AllArgsConstructor
 @NoArgsConstructor
-public class FoodItem extends Item {
+public class FoodDTO extends ItemDTO {
 
-    @Column(name = "date_of_production")
     private LocalDate dateOfProduction;
 
-    @Column(name = "date_of_eaten")
     private LocalDate dateOfEaten;
 
-    public FoodItem(String name, String description, int price, LocalDate dateOfProduction, LocalDate dateOfEaten,
+    public FoodDTO(String name, String description, int price, LocalDate dateOfProduction, LocalDate dateOfEaten,
                     String fabricator, Category category, Metric metric, double amount, LocalDate dateOfPurchase) {
         this.name = name;
         this.description = description;

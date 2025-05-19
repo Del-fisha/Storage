@@ -1,4 +1,4 @@
-package pet.storage.storage.utility;
+package pet.storage.storage.utility.converter;
 
 import pet.storage.storage.dto.FoodDTO;
 import pet.storage.storage.model.FoodItem;

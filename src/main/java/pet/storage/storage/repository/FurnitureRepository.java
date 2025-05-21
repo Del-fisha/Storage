@@ -6,4 +6,5 @@ import pet.storage.storage.model.FurnitureItem;
 
 @Repository
 public interface FurnitureRepository extends JpaRepository<FurnitureItem, Integer> {
+    FurnitureItem findByName(String name);
 }

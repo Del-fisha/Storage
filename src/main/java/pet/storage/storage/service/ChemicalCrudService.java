@@ -13,9 +13,9 @@ import java.util.List;
 @Service
 public class ChemicalCrudService implements CrudService<ChemicalDTO> {
 
-    ChemicalRepository chemicalRepository;
-    ChemicalDtoToEntityConverter dtoToEntityConverter;
-    ChemicalEntityToDtoConverter entityToDtoConverter;
+    private final ChemicalRepository chemicalRepository;
+    private final ChemicalDtoToEntityConverter dtoToEntityConverter;
+    private final ChemicalEntityToDtoConverter entityToDtoConverter;
 
     @Autowired
     public ChemicalCrudService(ChemicalRepository repository) {
@@ -52,6 +52,7 @@ public class ChemicalCrudService implements CrudService<ChemicalDTO> {
     public ChemicalDTO update(ChemicalDTO chemicalDTO) {
         ChemicalItem chemicalItem = new ChemicalItem();
 
+        chemicalItem.setName(chemicalDTO.getName());
         chemicalItem.setAmount(chemicalDTO.getAmount());
         chemicalItem.setFabricator(chemicalDTO.getFabricator());
         chemicalItem.setMetric(chemicalDTO.getMetric());

@@ -43,12 +43,13 @@ public class FoodCrudService implements CrudService<FoodDTO> {
     }
 
     @Override
-    public void save(FoodDTO foodDTO) {
-        foodRepository.save(foodDtoToEntityConverter.convert(foodDTO));
+    public FoodDTO save(FoodDTO foodDTO) {
+        FoodItem foodDto = foodDtoToEntityConverter.convert(foodDTO);
+        return foodEntityToDtoConverter.convert(foodRepository.save(foodDto));
     }
 
     @Override
-    public void update(FoodDTO foodDTO) {
+    public FoodDTO update(FoodDTO foodDTO) {
         FoodItem foodItem = foodRepository.findByName(foodDTO.getName());
 
         foodItem.setAmount(foodDTO.getAmount());
@@ -61,7 +62,7 @@ public class FoodCrudService implements CrudService<FoodDTO> {
         foodItem.setDateOfProduction(foodDTO.getDateOfProduction());
         foodItem.setDateOfEaten(foodDTO.getDateOfEaten());
 
-        foodRepository.save(foodItem);
+        return foodEntityToDtoConverter.convert(foodRepository.save(foodItem));
     }
 
     @Override

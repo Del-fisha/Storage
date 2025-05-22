@@ -1,5 +1,6 @@
 package pet.storage.storage.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pet.storage.storage.dto.ElectricalDTO;
 import pet.storage.storage.model.ElectricalItem;
@@ -17,6 +18,7 @@ public class ElectricalCrudService implements CrudService<ElectricalDTO> {
     private final ElectricalDtoToEntityConverter dtoToEntityConverter;
     private final ElectricalEntityToDtoConverter entityToDtoConverter;
 
+    @Autowired
     public ElectricalCrudService(ElectricalRepository repository) {
         this.electricalRepository = repository;
         this.dtoToEntityConverter = new ElectricalDtoToEntityConverter();

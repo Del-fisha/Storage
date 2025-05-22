@@ -9,6 +9,7 @@ import pet.storage.storage.utility.converter.ChemicalDtoToEntityConverter;
 import pet.storage.storage.utility.converter.ChemicalEntityToDtoConverter;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ChemicalCrudService implements CrudService<ChemicalDTO> {
@@ -39,7 +40,7 @@ public class ChemicalCrudService implements CrudService<ChemicalDTO> {
     public List<ChemicalDTO> findAll() {
         return chemicalRepository.findAll().stream()
                 .map(entityToDtoConverter::convert)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @Override

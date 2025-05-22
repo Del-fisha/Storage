@@ -9,6 +9,7 @@ import pet.storage.storage.utility.converter.FurnitureDtoToEntityConverter;
 import pet.storage.storage.utility.converter.FurnitureEntityToDtoConverter;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class FurnitureCrudService implements CrudService<FurnitureDTO> {
@@ -40,7 +41,7 @@ public class FurnitureCrudService implements CrudService<FurnitureDTO> {
         List<FurnitureItem> listOfFurnitureItems = furnitureRepository.findAll();
         return listOfFurnitureItems.stream()
                 .map(entityToDtoConverter::convert)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @Override

@@ -6,4 +6,5 @@ import pet.storage.storage.model.ElectricalItem;
 
 @Repository
 public interface ElectricalRepository extends JpaRepository<ElectricalItem, Integer> {
+    ElectricalItem findByName(String name);
 }

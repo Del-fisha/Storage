@@ -8,7 +8,6 @@ import pet.storage.storage.repository.FoodRepository;
 import pet.storage.storage.utility.converter.FoodDtoToEntityConverter;
 import pet.storage.storage.utility.converter.FoodEntityToDtoConverter;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 

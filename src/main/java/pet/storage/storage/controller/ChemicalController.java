@@ -19,27 +19,27 @@ public class ChemicalController {
         this.chemicalCrudService = chemicalCrudService;
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/id/{id}")
     public ResponseEntity<ChemicalDTO> getById(@PathVariable("id") int id) {
         return ResponseEntity.ok(chemicalCrudService.findById(id));
     }
 
-    @GetMapping("/{name}")
+    @GetMapping("/name/{name}")
     public ResponseEntity<ChemicalDTO> getByName(@PathVariable("name") String name) {
         return ResponseEntity.ok(chemicalCrudService.findByName(name));
     }
 
-    @GetMapping
+    @GetMapping("/")
     public ResponseEntity<List<ChemicalDTO>> getAll() {
         return ResponseEntity.ok(chemicalCrudService.findAll());
     }
 
-    @PostMapping()
+    @PostMapping("/")
     public ResponseEntity<ChemicalDTO> create(@RequestBody ChemicalDTO chemicalDTO) {
         return ResponseEntity.ok(chemicalCrudService.save(chemicalDTO));
     }
 
-    @PutMapping()
+    @PutMapping("/")
     public ResponseEntity<ChemicalDTO> update(@RequestBody ChemicalDTO chemicalDTO) {
         return ResponseEntity.ok(chemicalCrudService.update(chemicalDTO));
     }

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import pet.storage.storage.dto.FoodDTO;
 import pet.storage.storage.service.FoodCrudService;
 
-@RestController
+@RestController("/food")
 public class FoodController {
 
     private final FoodCrudService foodCrudService;
@@ -17,34 +17,34 @@ public class FoodController {
         this.foodCrudService = foodRepository;
     }
 
-    @GetMapping("/food/id/{id}")
+    @GetMapping("/id/{id}")
     public ResponseEntity<?> getFoodById(@PathVariable("id") int id) {
         FoodDTO dto = foodCrudService.findById(id);
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
-    @GetMapping("/food/name/{name}")
+    @GetMapping("/name/{name}")
     public ResponseEntity<?> getFoodByName(@PathVariable("name") String name) {
         FoodDTO dto = foodCrudService.findByName(name);
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
-    @GetMapping("/food")
+    @GetMapping("/")
     public ResponseEntity<?> getAllFood() {
         return new ResponseEntity<>(foodCrudService.findAll(), HttpStatus.OK);
     }
 
-    @PostMapping("/food")
+    @PostMapping("/")
     public ResponseEntity<?> addFood(@RequestBody FoodDTO dto) {
         return new ResponseEntity<>(foodCrudService.save(dto), HttpStatus.CREATED);
     }
 
-    @PutMapping("/food")
+    @PutMapping("/")
     public ResponseEntity<?> updateFood(@RequestBody FoodDTO dto) {
         return new ResponseEntity<>(foodCrudService.update(dto), HttpStatus.OK);
     }
 
-    @DeleteMapping("/food/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteFood(@PathVariable("id") int id) {
         foodCrudService.delete(id);
         return new ResponseEntity<>(HttpStatus.OK);

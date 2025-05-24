@@ -18,12 +18,12 @@ public class ElectricalController {
         this.electricalCrudService = electricalCrudService;
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/id/{id}")
     public ResponseEntity<ElectricalDTO> findById(@PathVariable int id) {
         return ResponseEntity.ok(electricalCrudService.findById(id));
     }
 
-    @GetMapping("/{name}")
+    @GetMapping("/name/{name}")
     public ResponseEntity<ElectricalDTO> findByName(@PathVariable String name) {
         return ResponseEntity.ok(electricalCrudService.findByName(name));
     }

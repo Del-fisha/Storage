@@ -1,8 +1,10 @@
 package pet.storage.storage.utility.converter;
 
+import org.springframework.stereotype.Component;
 import pet.storage.storage.dto.FoodDTO;
 import pet.storage.storage.model.FoodItem;
 
+@Component
 public class FoodEntityToDtoConverter implements ConverterOfEntities<FoodDTO, FoodItem> {
 
     @Override

@@ -1,8 +1,10 @@
 package pet.storage.storage.utility.converter;
 
+import org.springframework.stereotype.Component;
 import pet.storage.storage.dto.ElectricalDTO;
 import pet.storage.storage.model.ElectricalItem;
 
+@Component
 public class ElectricalEntityToDtoConverter implements ConverterOfEntities<ElectricalDTO, ElectricalItem> {
 
     @Override
@@ -19,6 +21,6 @@ public class ElectricalEntityToDtoConverter implements ConverterOfEntities<Elect
         dto.setWarrantyEndDate(entity.getWarrantyEndDate());
         dto.setDescription(entity.getDescription());
 
-        return null;
+        return dto;
     }
 }

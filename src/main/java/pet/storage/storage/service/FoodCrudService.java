@@ -3,6 +3,8 @@ package pet.storage.storage.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pet.storage.storage.dto.FoodDTO;
+import pet.storage.storage.exceptions.ItemAlreadyExistsException;
+import pet.storage.storage.exceptions.ItemNotFoundException;
 import pet.storage.storage.model.FoodItem;
 import pet.storage.storage.repository.FoodRepository;
 import pet.storage.storage.utility.converter.FoodDtoToEntityConverter;
@@ -27,12 +29,16 @@ public class FoodCrudService implements CrudService<FoodDTO> {
 
     @Override
     public FoodDTO findById(int id) {
-        return foodEntityToDtoConverter.convert(foodRepository.findById(id).orElseThrow());
+        return foodEntityToDtoConverter.convert(foodRepository.findById(id).orElseThrow(ItemNotFoundException::new));
     }
 
     @Override
     public FoodDTO findByName(String name) {
-        return foodEntityToDtoConverter.convert(foodRepository.findByName(name));
+        FoodItem foodItem = foodRepository.findByName(name);
+        if (foodItem == null) {
+            throw new ItemNotFoundException();
+        }
+        return foodEntityToDtoConverter.convert(foodItem);
     }
 
     @Override
@@ -43,6 +49,10 @@ public class FoodCrudService implements CrudService<FoodDTO> {
 
     @Override
     public FoodDTO save(FoodDTO foodDTO) {
+        FoodItem itemToFind = foodRepository.findByName(foodDTO.getName());
+        if (itemToFind != null) {
+            throw new ItemAlreadyExistsException();
+        }
         FoodItem foodDto = foodDtoToEntityConverter.convert(foodDTO);
         return foodEntityToDtoConverter.convert(foodRepository.save(foodDto));
     }
@@ -50,6 +60,9 @@ public class FoodCrudService implements CrudService<FoodDTO> {
     @Override
     public FoodDTO update(FoodDTO foodDTO) {
         FoodItem foodItem = foodRepository.findByName(foodDTO.getName());
+        if (foodItem == null) {
+            throw new ItemNotFoundException();
+        }
 
         foodItem.setAmount(foodDTO.getAmount());
         foodItem.setFabricator(foodDTO.getFabricator());
@@ -66,6 +79,7 @@ public class FoodCrudService implements CrudService<FoodDTO> {
 
     @Override
     public void delete(int id) {
+        FoodItem foodItem = foodRepository.findById(id).orElseThrow(ItemNotFoundException::new);
         foodRepository.deleteById(id);
     }
 }

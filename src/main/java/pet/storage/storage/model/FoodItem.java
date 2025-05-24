@@ -24,9 +24,10 @@ public class FoodItem extends Item {
     private LocalDate dateOfEaten;
 
     public FoodItem(String name, String fabricator, Category category, Metric metric, double amount,
-                    double price, LocalDate dateOfPurchase, String description, LocalDate dateOfEaten) {
+                    double price, LocalDate dateOfPurchase, String description, LocalDate dateOfProduction, LocalDate dateOfEaten) {
 
         super(name, fabricator, category, metric, amount, price, dateOfPurchase, description);
         this.dateOfEaten = dateOfEaten;
+        this.dateOfProduction = dateOfProduction;
     }
 }

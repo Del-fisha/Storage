@@ -3,6 +3,8 @@ package pet.storage.storage.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pet.storage.storage.dto.ElectricalDTO;
+import pet.storage.storage.exceptions.ItemAlreadyExistsException;
+import pet.storage.storage.exceptions.ItemNotFoundException;
 import pet.storage.storage.model.ElectricalItem;
 import pet.storage.storage.repository.ElectricalRepository;
 import pet.storage.storage.utility.converter.ElectricalDtoToEntityConverter;
@@ -28,12 +30,16 @@ public class ElectricalCrudService implements CrudService<ElectricalDTO> {
 
     @Override
     public ElectricalDTO findById(int id) {
-        return entityToDtoConverter.convert(electricalRepository.findById(id).orElseThrow());
+        return entityToDtoConverter.convert(electricalRepository.findById(id).orElseThrow(ItemNotFoundException::new));
     }
 
     @Override
     public ElectricalDTO findByName(String name) {
-        return entityToDtoConverter.convert(electricalRepository.findByName(name));
+        ElectricalItem electricalItem = electricalRepository.findByName(name);
+        if (electricalItem == null) {
+            throw new ItemNotFoundException();
+        }
+        return entityToDtoConverter.convert(electricalItem);
     }
 
     @Override
@@ -44,13 +50,20 @@ public class ElectricalCrudService implements CrudService<ElectricalDTO> {
 
     @Override
     public ElectricalDTO save(ElectricalDTO electricalDTO) {
-        ElectricalItem electricalItem = dtoToEntityConverter.convert(electricalDTO);
-        return entityToDtoConverter.convert(electricalRepository.save(electricalItem));
+        ElectricalItem electricalItem = electricalRepository.findByName(electricalDTO.getName());
+        if (electricalItem != null) {
+            throw new ItemAlreadyExistsException();
+        }
+
+        return entityToDtoConverter.convert(electricalRepository.save(dtoToEntityConverter.convert(electricalDTO)));
     }
 
     @Override
     public ElectricalDTO update(ElectricalDTO electricalDTO) {
         ElectricalItem electricalItem = electricalRepository.findByName(electricalDTO.getName());
+        if (electricalItem == null) {
+            throw new ItemNotFoundException();
+        }
 
         electricalItem.setName(electricalDTO.getName());
         electricalItem.setAmount(electricalDTO.getAmount());
@@ -67,6 +80,7 @@ public class ElectricalCrudService implements CrudService<ElectricalDTO> {
 
     @Override
     public void delete(int id) {
+        ElectricalItem item = electricalRepository.findById(id).orElseThrow(ItemNotFoundException::new);
         electricalRepository.deleteById(id);
     }
 }

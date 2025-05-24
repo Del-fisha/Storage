@@ -1,8 +1,10 @@
 package pet.storage.storage.utility.converter;
 
+import org.springframework.stereotype.Component;
 import pet.storage.storage.dto.ChemicalDTO;
 import pet.storage.storage.model.ChemicalItem;
 
+@Component
 public class ChemicalDtoToEntityConverter implements ConverterOfEntities<ChemicalItem, ChemicalDTO> {
 
     @Override

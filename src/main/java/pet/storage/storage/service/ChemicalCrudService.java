@@ -3,6 +3,8 @@ package pet.storage.storage.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pet.storage.storage.dto.ChemicalDTO;
+import pet.storage.storage.exceptions.ItemAlreadyExistsException;
+import pet.storage.storage.exceptions.ItemNotFoundException;
 import pet.storage.storage.model.ChemicalItem;
 import pet.storage.storage.repository.ChemicalRepository;
 import pet.storage.storage.utility.converter.ChemicalDtoToEntityConverter;
@@ -28,11 +30,15 @@ public class ChemicalCrudService implements CrudService<ChemicalDTO> {
 
     @Override
     public ChemicalDTO findById(int id) {
-        return entityToDtoConverter.convert(chemicalRepository.findById(id).orElseThrow());
+        return entityToDtoConverter.convert(chemicalRepository.findById(id).orElseThrow(ItemNotFoundException::new));
     }
 
     @Override
     public ChemicalDTO findByName(String name) {
+        ChemicalItem item = chemicalRepository.findByName(name);
+        if (item == null) {
+            throw new ItemNotFoundException();
+        }
         return entityToDtoConverter.convert(chemicalRepository.findByName(name));
     }
 
@@ -45,13 +51,20 @@ public class ChemicalCrudService implements CrudService<ChemicalDTO> {
 
     @Override
     public ChemicalDTO save(ChemicalDTO chemicalDTO) {
+        ChemicalItem itemToFind = chemicalRepository.findByName(chemicalDTO.getName());
+        if (itemToFind != null) {
+            throw new ItemAlreadyExistsException();
+        }
         ChemicalItem item = dtoToEntityConverter.convert(chemicalDTO);
         return entityToDtoConverter.convert(chemicalRepository.save(item));
     }
 
     @Override
     public ChemicalDTO update(ChemicalDTO chemicalDTO) {
-        ChemicalItem chemicalItem = new ChemicalItem();
+        ChemicalItem chemicalItem = chemicalRepository.findByName(chemicalDTO.getName());
+        if (chemicalItem == null) {
+            throw new ItemNotFoundException();
+        }
 
         chemicalItem.setName(chemicalDTO.getName());
         chemicalItem.setAmount(chemicalDTO.getAmount());
@@ -68,6 +81,7 @@ public class ChemicalCrudService implements CrudService<ChemicalDTO> {
 
     @Override
     public void delete(int id) {
+        ChemicalItem item = chemicalRepository.findById(id).orElseThrow(ItemNotFoundException::new);
         chemicalRepository.deleteById(id);
     }
 }

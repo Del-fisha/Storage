@@ -3,6 +3,8 @@ package pet.storage.storage.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pet.storage.storage.dto.FurnitureDTO;
+import pet.storage.storage.exceptions.ItemAlreadyExistsException;
+import pet.storage.storage.exceptions.ItemNotFoundException;
 import pet.storage.storage.model.FurnitureItem;
 import pet.storage.storage.repository.FurnitureRepository;
 import pet.storage.storage.utility.converter.FurnitureDtoToEntityConverter;
@@ -28,12 +30,16 @@ public class FurnitureCrudService implements CrudService<FurnitureDTO> {
 
     @Override
     public FurnitureDTO findById(int id) {
-        return entityToDtoConverter.convert(furnitureRepository.findById(id).orElseThrow());
+        return entityToDtoConverter.convert(furnitureRepository.findById(id).orElseThrow(ItemNotFoundException::new));
     }
 
     @Override
     public FurnitureDTO findByName(String name) {
-        return entityToDtoConverter.convert(furnitureRepository.findByName(name));
+        FurnitureItem furnitureItem = furnitureRepository.findByName(name);
+        if (furnitureItem == null) {
+            throw new ItemNotFoundException();
+        }
+        return entityToDtoConverter.convert(furnitureItem);
     }
 
     @Override
@@ -46,13 +52,21 @@ public class FurnitureCrudService implements CrudService<FurnitureDTO> {
 
     @Override
     public FurnitureDTO save(FurnitureDTO furnitureDTO) {
+        FurnitureItem itemToFind = furnitureRepository.findByName(furnitureDTO.getName());
+        if (itemToFind != null) {
+            throw new ItemAlreadyExistsException();
+        }
+
         FurnitureItem furnitureItem = dtoToEntityConverter.convert(furnitureDTO);
         return entityToDtoConverter.convert(furnitureRepository.save(furnitureItem));
     }
 
     @Override
     public FurnitureDTO update(FurnitureDTO furnitureDTO) {
-        FurnitureItem furnitureItem = new FurnitureItem();
+        FurnitureItem furnitureItem = furnitureRepository.findByName(furnitureDTO.getName());
+        if (furnitureItem == null) {
+            throw new ItemNotFoundException();
+        }
 
         furnitureItem.setName(furnitureDTO.getName());
         furnitureItem.setAmount(furnitureDTO.getAmount());
@@ -68,6 +82,7 @@ public class FurnitureCrudService implements CrudService<FurnitureDTO> {
 
     @Override
     public void delete(int id) {
+        FurnitureItem itemToFind = furnitureRepository.findById(id).orElseThrow(ItemNotFoundException::new);
         furnitureRepository.deleteById(id);
     }
 }

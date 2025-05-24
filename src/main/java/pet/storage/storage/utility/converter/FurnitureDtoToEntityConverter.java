@@ -1,8 +1,10 @@
 package pet.storage.storage.utility.converter;
 
+import org.springframework.stereotype.Component;
 import pet.storage.storage.dto.FurnitureDTO;
 import pet.storage.storage.model.FurnitureItem;
 
+@Component
 public class FurnitureDtoToEntityConverter implements ConverterOfEntities<FurnitureItem, FurnitureDTO> {
 
     @Override

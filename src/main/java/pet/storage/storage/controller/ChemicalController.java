@@ -1,6 +1,7 @@
 package pet.storage.storage.controller;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,7 +10,10 @@ import pet.storage.storage.service.ChemicalCrudService;
 
 import java.util.List;
 
-@RestController("/storage_api/chemical")
+
+@RestController
+@RequestMapping("/storage_api/chemical")
+@Slf4j
 public class ChemicalController {
 
     private final ChemicalCrudService chemicalCrudService;

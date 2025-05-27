@@ -1,9 +1,10 @@
-package pet.storage.storage.exceptions;
+package pet.storage.storage.aop;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import pet.storage.storage.exceptions.*;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {

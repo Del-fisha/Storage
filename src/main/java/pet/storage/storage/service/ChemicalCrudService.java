@@ -84,4 +84,5 @@ public class ChemicalCrudService implements CrudService<ChemicalDTO> {
         ChemicalItem item = chemicalRepository.findById(id).orElseThrow(ItemNotFoundException::new);
         chemicalRepository.deleteById(id);
     }
+
 }

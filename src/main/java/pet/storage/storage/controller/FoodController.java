@@ -7,7 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import pet.storage.storage.dto.FoodDTO;
 import pet.storage.storage.service.FoodCrudService;
 
-@RestController("/food")
+@RestController
+@RequestMapping("/storage_api/food")
 public class FoodController {
 
     private final FoodCrudService foodCrudService;

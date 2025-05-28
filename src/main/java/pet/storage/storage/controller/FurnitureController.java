@@ -8,7 +8,8 @@ import pet.storage.storage.service.FurnitureCrudService;
 
 import java.util.List;
 
-@RestController("/furniture")
+@RestController
+@RequestMapping("/storage_api/furniture")
 public class FurnitureController {
 
     private final FurnitureCrudService furnitureCrudService;

@@ -8,7 +8,8 @@ import pet.storage.storage.service.ElectricalCrudService;
 
 import java.util.List;
 
-@RestController("/electrical")
+@RestController
+@RequestMapping("/storage_api/electrical")
 public class ElectricalController {
 
     private final ElectricalCrudService electricalCrudService;

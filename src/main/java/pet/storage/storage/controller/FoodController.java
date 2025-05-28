@@ -46,8 +46,8 @@ public class FoodController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteFood(@PathVariable("id") int id) {
+    public ResponseEntity<Void> deleteFood(@PathVariable("id") int id) {
         foodCrudService.delete(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.noContent().build();
     }
 }

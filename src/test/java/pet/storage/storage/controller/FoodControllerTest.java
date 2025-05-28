@@ -18,7 +18,11 @@ import pet.storage.storage.exceptions.ItemNotFoundException;
 import pet.storage.storage.model.enum_classes.Category;
 import pet.storage.storage.model.enum_classes.Metric;
 import pet.storage.storage.service.FoodCrudService;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Objects;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.mockito.ArgumentMatchers.any;
@@ -26,16 +30,10 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Objects;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
 @WebMvcTest(FoodController.class)
 @ContextConfiguration(classes = {FoodController.class, GlobalExceptionHandler.class})
 class FoodControllerTest {
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -146,7 +144,7 @@ class FoodControllerTest {
                 0.5,
                 120.0,
                 LocalDate.of(2025, 5, 20),
-                 "Консервированная фасоль",
+                "Консервированная фасоль",
                 LocalDate.of(2025, 2, 15),
                 LocalDate.of(2026, 2, 15)
         );
@@ -175,8 +173,8 @@ class FoodControllerTest {
         when(foodCrudService.save(any(FoodDTO.class))).thenReturn(mockFood);
 
         mockMvc.perform(post("/storage_api/food/")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(dtoToTest)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dtoToTest)))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.name").value(mockFood.getName()))
@@ -197,8 +195,8 @@ class FoodControllerTest {
         when(foodCrudService.save(any(FoodDTO.class))).thenThrow(new ItemAlreadyExistsException());
 
         mockMvc.perform(post("/storage_api/food/")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(dtoToTest)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dtoToTest)))
                 .andExpect(status().isConflict())
                 .andExpect(result -> assertInstanceOf(ItemAlreadyExistsException.class,
                         result.getResolvedException()))
@@ -220,8 +218,8 @@ class FoodControllerTest {
         mockFood.setAmount(mockFood.getAmount() + 2);
 
         mockMvc.perform(put("/storage_api/food/")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(dtoToTest)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dtoToTest)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.name").value(mockFood.getName()))
@@ -242,8 +240,8 @@ class FoodControllerTest {
         when(foodCrudService.update(any(FoodDTO.class))).thenThrow(new ItemNotFoundException());
 
         mockMvc.perform(put("/storage_api/food/")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(dtoToTest)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dtoToTest)))
                 .andExpect(status().isNotFound())
                 .andExpect(result -> assertInstanceOf(ItemNotFoundException.class,
                         result.getResolvedException()))
@@ -258,7 +256,7 @@ class FoodControllerTest {
 
         int idToDelete = 99;
 
-        mockMvc.perform(delete("/storage_api/food/{id}",idToDelete))
+        mockMvc.perform(delete("/storage_api/food/{id}", idToDelete))
                 .andExpect(status().isNotFound())
                 .andExpect(result -> assertInstanceOf(ItemNotFoundException.class,
                         result.getResolvedException()));
@@ -271,7 +269,7 @@ class FoodControllerTest {
     void shouldDeleteFoodById() throws Exception {
         doNothing().when(foodCrudService).delete(anyInt());
         int idToDelete = 1;
-        mockMvc.perform(delete("/storage_api/food/{id}",idToDelete))
+        mockMvc.perform(delete("/storage_api/food/{id}", idToDelete))
                 .andExpect(status().isNoContent());
         verify(foodCrudService, times(1)).delete(idToDelete);
     }

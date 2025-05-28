@@ -12,7 +12,22 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import pet.storage.storage.aop.GlobalExceptionHandler;
+import pet.storage.storage.dto.FoodDTO;
+import pet.storage.storage.model.enum_classes.Category;
+import pet.storage.storage.model.enum_classes.Metric;
 import pet.storage.storage.service.FoodCrudService;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import java.time.LocalDate;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 @WebMvcTest(FoodController.class)
 @ContextConfiguration(classes = {FoodController.class, GlobalExceptionHandler.class})
@@ -26,20 +41,31 @@ class FoodControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    FoodDTO mockFood;
+
     @BeforeEach
     void setUp() {
-        // инициализация тестовых данных
+        mockFood = new FoodDTO("Молоко", "Ферма 'Ромашка'", Category.Food, Metric.L, 1.0,
+                80.0, LocalDate.now(), "Свежее коровье молоко",
+                LocalDate.now().minusDays(2),  // Дата производства
+                LocalDate.now().plusDays(5));   // Срок годности);
     }
 
     @AfterEach
     void tearDown() {
-        // очистка тестовых данных
+        mockFood = null;
     }
 
     @Test
     @DisplayName("Получение продукта по ID возвращает FoodDTO")
     void shouldReturnFoodById() throws Exception {
-        // TODO
+        when(foodCrudService.findById(any(Integer.class))).thenReturn(mockFood);
+        int idToFind = 1;
+
+        mockMvc.perform(get("/storage_api/food/id/{id}", idToFind))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.name").value(mockFood.getName()));
     }
 
     @Test

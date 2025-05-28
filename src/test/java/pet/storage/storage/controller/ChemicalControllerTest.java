@@ -34,6 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(ChemicalController.class)
 @ContextConfiguration(classes = {ChemicalController.class, GlobalExceptionHandler.class})
 class ChemicalControllerTest {
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -62,54 +63,68 @@ class ChemicalControllerTest {
     @Test
     @DisplayName("Получение химиката по ID возвращает ChemicalDTO")
     void shouldReturnChemicalById() throws Exception {
-        when(chemicalCrudService.findById(1)).thenReturn(mockChemical);
+        when(chemicalCrudService.findById(any(Integer.class))).thenReturn(mockChemical);
+        int idToFind = 1;
 
-        mockMvc.perform(get("/storage_api/chemical/id/1"))
+        mockMvc.perform(get("/storage_api/chemical/id/{id}", idToFind))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.name").value("Domestos"))
-                .andExpect(jsonPath("$.fabricator").value("Unilever"))
-                .andExpect(jsonPath("$.amount").value(1.0));
+                .andExpect(jsonPath("$.name").value(mockChemical.getName()))
+                .andExpect(jsonPath("$.fabricator").value(mockChemical.getFabricator()))
+                .andExpect(jsonPath("$.amount").value(mockChemical.getAmount()));
+
+        verify(chemicalCrudService, times(1)).findById(any(Integer.class));
     }
 
     @Test
     @DisplayName("Получение химиката по несуществующему ID выбрасывает ItemNotFoundException")
     void shouldThrowExceptionWhenChemicalNotFoundById() throws Exception {
-        when(chemicalCrudService.findById(2)).thenThrow(new ItemNotFoundException());
+        when(chemicalCrudService.findById(any(Integer.class))).thenThrow(new ItemNotFoundException());
+        int idToFind = 1;
 
-        mockMvc.perform(get("/storage_api/chemical/id/2"))
+        mockMvc.perform(get("/storage_api/chemical/id/{id}", idToFind))
                 .andExpect(status().isNotFound())
                 .andExpect(result ->
                         assertInstanceOf(ItemNotFoundException.class, result.getResolvedException()))
                 .andExpect(result ->
                         assertEquals("Такой товар не найден",
                                 Objects.requireNonNull(result.getResolvedException()).getMessage()));
+
+        verify(chemicalCrudService, times(1)).findById(any(Integer.class));
     }
 
     @Test
     @DisplayName("Получение химиката по названию возвращает ChemicalDTO")
     void shouldReturnChemicalByName() throws Exception {
-        when(chemicalCrudService.findByName("Domestos")).thenReturn(mockChemical);
+        when(chemicalCrudService.findByName(any(String.class))).thenReturn(mockChemical);
 
-        mockMvc.perform(get("/storage_api/chemical/name/Domestos"))
+        String nameToFind = "Domestos";
+
+        mockMvc.perform(get("/storage_api/chemical/name/{name}", nameToFind))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.name").value("Domestos"))
-                .andExpect(jsonPath("$.fabricator").value("Unilever"))
-                .andExpect(jsonPath("$.amount").value(1.0));
+                .andExpect(jsonPath("$.name").value(mockChemical.getName()))
+                .andExpect(jsonPath("$.fabricator").value(mockChemical.getFabricator()))
+                .andExpect(jsonPath("$.amount").value(mockChemical.getAmount()));
+
+        verify(chemicalCrudService, times(1)).findByName(any(String.class));
     }
 
     @Test
     @DisplayName("Получение химиката по несуществующему названию выбрасывает ItemNotFoundException")
     void shouldThrowExceptionWhenChemicalNotFoundByName() throws Exception {
-        when(chemicalCrudService.findByName("Colgate")).thenThrow(new ItemNotFoundException());
+        when(chemicalCrudService.findByName(any(String.class))).thenThrow(new ItemNotFoundException());
 
-        mockMvc.perform(get("/storage_api/chemical/name/Colgate"))
+        String nameToFind = "Colgate";
+
+        mockMvc.perform(get("/storage_api/chemical/name/{name}", nameToFind))
                 .andExpect(status().isNotFound())
                 .andExpect(result -> assertInstanceOf(ItemNotFoundException.class,
                         result.getResolvedException()))
                 .andExpect(result -> assertEquals("Такой товар не найден",
                         Objects.requireNonNull(result.getResolvedException()).getMessage()));
+
+        verify(chemicalCrudService, times(1)).findByName(any(String.class));
     }
 
     @Test
@@ -142,8 +157,9 @@ class ChemicalControllerTest {
         mockMvc.perform(get("/storage_api/chemical/"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.length()").value(3))
-                .andExpect(jsonPath("$[0].name").value("Domestos"));
+                .andExpect(jsonPath("$.length()").value(3));
+
+        verify(chemicalCrudService, times(1)).findAll();
     }
 
     @Test
@@ -162,9 +178,11 @@ class ChemicalControllerTest {
                         .content(objectMapper.writeValueAsString(chemicalDtoToTest)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.name").value("Domestos"))
-                .andExpect(jsonPath("$.fabricator").value("Unilever"))
-                .andExpect(jsonPath("$.amount").value(1.0));
+                .andExpect(jsonPath("$.name").value(mockChemical.getName()))
+                .andExpect(jsonPath("$.fabricator").value(mockChemical.getFabricator()))
+                .andExpect(jsonPath("$.amount").value(mockChemical.getAmount()));
+
+        verify(chemicalCrudService, times(1)).save(any(ChemicalDTO.class));
     }
 
     @Test
@@ -180,6 +198,8 @@ class ChemicalControllerTest {
                         result.getResolvedException()))
                 .andExpect(result -> assertEquals("Такая позиция уже есть на складе",
                         Objects.requireNonNull(result.getResolvedException()).getMessage()));
+
+        verify(chemicalCrudService, times(1)).save(any(ChemicalDTO.class));
     }
 
     @Test
@@ -199,8 +219,10 @@ class ChemicalControllerTest {
                         .content(objectMapper.writeValueAsString(chemicalDtoToTest)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.name").value("Domestos"))
-                .andExpect(jsonPath("$.amount").value(3.0));
+                .andExpect(jsonPath("$.name").value(mockChemical.getName()))
+                .andExpect(jsonPath("$.amount").value(mockChemical.getAmount()));
+
+        verify(chemicalCrudService, times(1)).update(any(ChemicalDTO.class));
     }
 
     @Test

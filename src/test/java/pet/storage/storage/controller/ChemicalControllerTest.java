@@ -141,7 +141,7 @@ class ChemicalControllerTest {
                 LocalDate.of(2025, 6, 15));
 
         ChemicalDTO mockChemical2 = new ChemicalDTO("Vanish",
-                "Reckitt Benckiser",
+                "Reckitt Backbencher",
                 Category.Chemicals,
                 Metric.Kg,
                 0.75,

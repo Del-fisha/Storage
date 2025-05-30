@@ -22,6 +22,12 @@ import pet.storage.storage.service.FurnitureCrudService;
 import java.time.LocalDate;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 @WebMvcTest(FurnitureController.class)
 @ContextConfiguration(classes = {FurnitureController.class, GlobalExceptionHandler.class})
 class FurnitureControllerTest {
@@ -59,13 +65,33 @@ class FurnitureControllerTest {
     @Test
     @DisplayName("Получение мебели по ID возвращает FurnitureDTO")
     void shouldReturnFurnitureById() throws Exception {
-        // ...
+        int idToFind = 1;
+        String furnitureName = "Диван";
+        when(furnitureCrudService.findById(anyInt())).thenReturn(mockFurniture);
+
+        mockMvc.perform(get("/storage_api/furniture/id/{id}", idToFind))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.name").value(furnitureName));
+
+        verify(furnitureCrudService, times(1)).findById(idToFind);
     }
 
     @Test
     @DisplayName("Получение мебели по несуществующему ID выбрасывает ItemNotFoundException")
     void shouldThrowExceptionWhenFurnitureNotFoundById() throws Exception {
-        // ...
+        when(furnitureCrudService.findById(anyInt())).thenThrow(ItemNotFoundException.class);
+
+        int idToFind = 999;
+        mockMvc.perform(get("/storage_api/furniture/id/{id}", idToFind))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(result -> assertInstanceOf(ItemNotFoundException.class,
+                        result.getResolvedException()))
+                .andExpect(jsonPath("$.message").value("Такой товар не найден"))
+                .andExpect(jsonPath("$.code").value("ItemNotFoundException"));
+
+        verify(furnitureCrudService, times(1)).findById(idToFind);
     }
 
     @Test

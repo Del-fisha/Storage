@@ -21,10 +21,12 @@ public class FurnitureCrudService implements CrudService<FurnitureDTO> {
     private final FurnitureEntityToDtoConverter entityToDtoConverter;
 
     @Autowired
-    public FurnitureCrudService(FurnitureRepository repository) {
+    public FurnitureCrudService(FurnitureRepository repository,
+                                FurnitureDtoToEntityConverter dtoToEntityConverter,
+                                FurnitureEntityToDtoConverter entityToDtoConverter) {
         this.furnitureRepository = repository;
-        this.dtoToEntityConverter = new FurnitureDtoToEntityConverter();
-        this.entityToDtoConverter = new FurnitureEntityToDtoConverter();
+        this.dtoToEntityConverter = dtoToEntityConverter;
+        this.entityToDtoConverter = entityToDtoConverter;
     }
 
 

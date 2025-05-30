@@ -20,7 +20,9 @@ import pet.storage.storage.model.enum_classes.Metric;
 import pet.storage.storage.service.ElectricalCrudService;
 
 import java.time.LocalDate;
+import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -64,31 +66,71 @@ class ElectricalControllerTest {
     @Test
     @DisplayName("Получение прибора по ID возвращает ElectricalDTO")
     void shouldReturnElectricalById() throws Exception {
-        // ...
+        when(electricalCrudService.findById(anyInt())).thenReturn(mockElectrical);
+        int idToGet = 1;
+
+        mockMvc.perform(get("/storage_api/electrical/id/{id}", idToGet))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.name").value(mockElectrical.getName()))
+                .andExpect(jsonPath("$.price").value(mockElectrical.getPrice()));
+
+        verify(electricalCrudService, times(1)).findById(anyInt());
     }
 
     @Test
     @DisplayName("Получение прибора по несуществующему ID выбрасывает ItemNotFoundException")
     void shouldThrowExceptionWhenElectricalNotFoundById() throws Exception {
-        // ...
+        int idToGet = 1;
+
+        when(electricalCrudService.findById(anyInt())).thenThrow(new ItemNotFoundException());
+
+        mockMvc.perform(get("/storage_api/electrical/id/{id}", idToGet))
+                .andExpect(status().isNotFound())
+                .andExpect(result -> assertInstanceOf(ItemNotFoundException.class,
+                        result.getResolvedException()))
+                .andExpect(jsonPath("$.message").value("Такой товар не найден"));
+
+        verify(electricalCrudService, times(1)).findById(anyInt());
     }
 
     @Test
     @DisplayName("Получение прибора по названию возвращает ElectricalDTO")
     void shouldReturnElectricalByName() throws Exception {
-        // ...
+        String nameToFind = "Холодильник";
+
+        when(electricalCrudService.findByName(anyString())).thenReturn(mockElectrical);
+
+        mockMvc.perform(get("/storage_api/electrical/name/{name}", nameToFind))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.name").value(mockElectrical.getName()))
+                .andExpect(jsonPath("$.price").value(mockElectrical.getPrice()));
+
+        verify(electricalCrudService, times(1)).findByName(anyString());
     }
 
     @Test
     @DisplayName("Получение прибора по несуществующему названию выбрасывает ItemNotFoundException")
     void shouldThrowExceptionWhenElectricalNotFoundByName() throws Exception {
-        // ...
+        String nameToFind = "Микроволновка";
+
+        when(electricalCrudService.findByName(anyString())).thenThrow(new ItemNotFoundException());
+
+        mockMvc.perform(get("/storage_api/electrical/name/{name}", nameToFind))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Такой товар не найден"))
+                .andExpect(result -> assertInstanceOf(ItemNotFoundException.class,
+                        result.getResolvedException()));
+
+        verify(electricalCrudService, times(1)).findByName(anyString());
     }
 
     @Test
     @DisplayName("Получение списка всех приборов возвращает список ElectricalDTO")
     void shouldReturnAllElectrical() throws Exception {
-        ElectricalDTO microwave = new ElectricalDTO(
+        ElectricalDTO mockElectrical1 = new ElectricalDTO(
                 "Микроволновка",
                 "Samsung",
                 Category.Electrical,
@@ -100,7 +142,7 @@ class ElectricalControllerTest {
                 LocalDate.of(2024, 7, 1)
         );
 
-        ElectricalDTO vacuum = new ElectricalDTO(
+        ElectricalDTO mockElectrical2 = new ElectricalDTO(
                 "Пылесос",
                 "Dyson",
                 Category.Electrical,
@@ -112,13 +154,46 @@ class ElectricalControllerTest {
                 LocalDate.of(2026, 5, 20)
         );
 
-        // ToDo
+        List<ElectricalDTO> electricalDTOList = List.of(mockElectrical, mockElectrical1, mockElectrical2);
+
+        when(electricalCrudService.findAll()).thenReturn(electricalDTOList);
+
+        mockMvc.perform(get("/storage_api/electrical/"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.length()").value(electricalDTOList.size()))
+                .andExpect(jsonPath("$[0].name").value(mockElectrical.getName()))
+                .andExpect(jsonPath("$[1].name").value(mockElectrical1.getName()))
+                .andExpect(jsonPath("$[2].name").value(mockElectrical2.getName()));
     }
 
     @Test
     @DisplayName("Создание нового прибора возвращает ElectricalDTO")
     void shouldCreateElectrical() throws Exception {
-        // ...
+        ElectricalDTO dtoToTest = new ElectricalDTO(
+                "Холодильник",
+                "Bosch",
+                Category.Electrical,
+                Metric.Piece,
+                1.0,
+                64990.0,
+                LocalDate.of(2023, 1, 15),
+                "Встраиваемый холодильник с No Frost",
+                LocalDate.of(2025, 1, 15)
+        );
+
+        when(electricalCrudService.save(any(ElectricalDTO.class))).thenReturn(mockElectrical);
+
+        mockMvc.perform(post("/storage_api/electrical/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dtoToTest)))
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.name").value(dtoToTest.getName()))
+                .andExpect(jsonPath("$.price").value(dtoToTest.getPrice()));
+
+        verify(electricalCrudService, times(1)).save(any(ElectricalDTO.class));
+
     }
 
     @Test

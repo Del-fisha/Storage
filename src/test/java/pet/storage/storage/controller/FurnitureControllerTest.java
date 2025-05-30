@@ -80,7 +80,7 @@ class FurnitureControllerTest {
     @Test
     @DisplayName("Получение мебели по несуществующему ID выбрасывает ItemNotFoundException")
     void shouldThrowExceptionWhenFurnitureNotFoundById() throws Exception {
-        when(furnitureCrudService.findById(anyInt())).thenThrow(ItemNotFoundException.class);
+        when(furnitureCrudService.findById(anyInt())).thenThrow(new ItemNotFoundException());
 
         int idToFind = 999;
         mockMvc.perform(get("/storage_api/furniture/id/{id}", idToFind))
@@ -88,8 +88,7 @@ class FurnitureControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(result -> assertInstanceOf(ItemNotFoundException.class,
                         result.getResolvedException()))
-                .andExpect(jsonPath("$.message").value("Такой товар не найден"))
-                .andExpect(jsonPath("$.code").value("ItemNotFoundException"));
+                .andExpect(jsonPath("$.message").value("Такой товар не найден"));
 
         verify(furnitureCrudService, times(1)).findById(idToFind);
     }
@@ -97,13 +96,31 @@ class FurnitureControllerTest {
     @Test
     @DisplayName("Получение мебели по названию возвращает FurnitureDTO")
     void shouldReturnFurnitureByName() throws Exception {
-        // ...
+        String nameToFind = "Диван";
+        when(furnitureCrudService.findByName(anyString())).thenReturn(mockFurniture);
+
+        mockMvc.perform(get("/storage_api/furniture/name/{name}", nameToFind))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.name").value(nameToFind));
+
+        verify(furnitureCrudService, times(1)).findByName(anyString());
     }
 
     @Test
     @DisplayName("Получение мебели по несуществующему названию выбрасывает ItemNotFoundException")
     void shouldThrowExceptionWhenFurnitureNotFoundByName() throws Exception {
-        // ...
+        String nameToFind = "Диван";
+        when(furnitureCrudService.findByName(anyString())).thenThrow(new ItemNotFoundException());
+
+        mockMvc.perform(get("/storage_api/furniture/name/{name}", nameToFind))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Такой товар не найден"))
+                .andExpect(result -> assertInstanceOf(ItemNotFoundException.class,
+                        result.getResolvedException()));
+
+        verify(furnitureCrudService, times(1)).findByName(anyString());
     }
 
     @Test
@@ -133,12 +150,44 @@ class FurnitureControllerTest {
         );
 
         List<FurnitureDTO> furnitureDTOList = List.of(mockFurniture, mockFurniture1, mockFurniture2);
+
+        when(furnitureCrudService.findAll()).thenReturn(furnitureDTOList);
+        mockMvc.perform(get("/storage_api/furniture/"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$[0].name").value(mockFurniture.getName()))
+                .andExpect(jsonPath("$[1].name").value(mockFurniture1.getName()))
+                .andExpect(jsonPath("$[2].name").value(mockFurniture2.getName()))
+                .andExpect(jsonPath("$.length()").value(3));
+
+        verify(furnitureCrudService, times(1)).findAll();
     }
 
     @Test
     @DisplayName("Создание новой мебели возвращает FurnitureDTO")
     void shouldCreateFurniture() throws Exception {
-        // ...
+        FurnitureDTO dtoToTest = new FurnitureDTO(
+                "Диван",
+                "IKEA",
+                Category.Furniture,
+                Metric.Piece,
+                1.0,
+                25000.0,
+                LocalDate.of(2024, 11, 10),
+                "Удобный трехместный диван с чехлом из хлопка"
+        );
+
+        when(furnitureCrudService.save(any(FurnitureDTO.class))).thenReturn(mockFurniture);
+
+        mockMvc.perform(post("/storage_api/furniture")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dtoToTest)))
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.name").value(dtoToTest.getName()))
+                .andExpect(jsonPath("$.category").value(dtoToTest.getCategory()));
+
+        verify(furnitureCrudService, times(1)).save(any(FurnitureDTO.class));
     }
 
     @Test

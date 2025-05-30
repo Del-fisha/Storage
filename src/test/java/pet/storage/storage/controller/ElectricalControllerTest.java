@@ -277,12 +277,28 @@ class ElectricalControllerTest {
     @Test
     @DisplayName("Удаление несуществующего прибора выбрасывает ItemNotFoundException")
     void shouldThrowExceptionWhenDeletingNonExistentElectrical() throws Exception {
-        // ...
+        doThrow(new ItemNotFoundException()).when(electricalCrudService).delete(anyInt());
+        int idToDelete = 999;
+
+        mockMvc.perform(delete("/storage_api/electrical/{id}", idToDelete))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Такой товар не найден"))
+                .andExpect(result -> assertInstanceOf(ItemNotFoundException.class,
+                        result.getResolvedException()));
+
+        verify(electricalCrudService, times(1)).delete(idToDelete);
     }
 
     @Test
     @DisplayName("Удаление прибора по валидному ID возвращает NoContent")
     void shouldDeleteElectricalById() throws Exception {
-        // ...
+        doNothing().when(electricalCrudService).delete(anyInt());
+        int idToDelete = 1;
+
+        mockMvc.perform(delete("/storage_api/electrical/{id}", idToDelete))
+                .andExpect(status().isNoContent());
+
+        verify(electricalCrudService, times(1)).delete(idToDelete);
     }
 }

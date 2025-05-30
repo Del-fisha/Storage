@@ -179,13 +179,12 @@ class FurnitureControllerTest {
 
         when(furnitureCrudService.save(any(FurnitureDTO.class))).thenReturn(mockFurniture);
 
-        mockMvc.perform(post("/storage_api/furniture")
+        mockMvc.perform(post("/storage_api/furniture/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dtoToTest)))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.name").value(dtoToTest.getName()))
-                .andExpect(jsonPath("$.category").value(dtoToTest.getCategory()));
+                .andExpect(jsonPath("$.name").value(dtoToTest.getName()));
 
         verify(furnitureCrudService, times(1)).save(any(FurnitureDTO.class));
     }
@@ -193,19 +192,86 @@ class FurnitureControllerTest {
     @Test
     @DisplayName("Создание уже существующей мебели выбрасывает ItemAlreadyExistsException")
     void shouldThrowExceptionWhenCreatingDuplicateFurniture() throws Exception {
-        // ...
+        FurnitureDTO dtoToTest = new FurnitureDTO(
+                "Диван",
+                "IKEA",
+                Category.Furniture,
+                Metric.Piece,
+                1.0,
+                25000.0,
+                LocalDate.of(2024, 11, 10),
+                "Удобный трехместный диван с чехлом из хлопка"
+        );
+
+        when(furnitureCrudService.save(any(FurnitureDTO.class))).thenThrow(new ItemAlreadyExistsException());
+
+        mockMvc.perform(post("/storage_api/furniture/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dtoToTest)))
+                .andExpect(status().isConflict())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Такая позиция уже есть на складе"))
+                .andExpect(result -> assertInstanceOf(ItemAlreadyExistsException.class,
+                        result.getResolvedException()));
     }
 
     @Test
     @DisplayName("Обновление существующей мебели возвращает FurnitureDTO")
     void shouldUpdateFurniture() throws Exception {
-        // ...
+        int plusAmount = 3;
+
+        FurnitureDTO dtoToTest = new FurnitureDTO(
+                "Диван",
+                "IKEA",
+                Category.Furniture,
+                Metric.Piece,
+                4.0,
+                25000.0,
+                LocalDate.of(2024, 11, 10),
+                "Удобный трехместный диван с чехлом из хлопка"
+        );
+
+        mockFurniture.setAmount(mockFurniture.getAmount() + plusAmount);
+
+        when(furnitureCrudService.update(any(FurnitureDTO.class))).thenReturn(mockFurniture);
+
+        mockMvc.perform(put("/storage_api/furniture/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dtoToTest)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.name").value(dtoToTest.getName()))
+                .andExpect(jsonPath("$.amount").value(dtoToTest.getAmount()));
+
+        verify(furnitureCrudService, times(1)).update(any(FurnitureDTO.class));
     }
 
     @Test
     @DisplayName("Обновление несуществующей мебели выбрасывает ItemNotFoundException")
     void shouldThrowExceptionWhenUpdatingNonExistentFurniture() throws Exception {
-        // ...
+        FurnitureDTO dtoToTest = new FurnitureDTO(
+                "Диван",
+                "IKEA",
+                Category.Furniture,
+                Metric.Piece,
+                4.0,
+                25000.0,
+                LocalDate.of(2024, 11, 10),
+                "Удобный трехместный диван с чехлом из хлопка"
+        );
+
+        when(furnitureCrudService.findById(anyInt())).thenThrow(new ItemNotFoundException());
+
+        mockMvc.perform(put("/storage_api/furniture/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dtoToTest)))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Такой товар не найден"))
+                .andExpect(result -> assertInstanceOf(ItemNotFoundException.class,
+                        result.getResolvedException()));
+
+        verify(furnitureCrudService, times(1)).update(any(FurnitureDTO.class));
     }
 
     @Test

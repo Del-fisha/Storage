@@ -45,8 +45,8 @@ public class FurnitureController {
         return ResponseEntity.ok(furnitureCrudService.update(furnitureDTO));
     }
 
-    @DeleteMapping("/id")
-    public ResponseEntity<FurnitureDTO> deleteFurniture(@RequestParam int id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<FurnitureDTO> deleteFurniture(@PathVariable("id") int id) {
         furnitureCrudService.delete(id);
         return ResponseEntity.noContent().build();
     }

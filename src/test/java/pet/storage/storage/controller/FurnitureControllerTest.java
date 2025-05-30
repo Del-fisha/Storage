@@ -260,7 +260,7 @@ class FurnitureControllerTest {
                 "Удобный трехместный диван с чехлом из хлопка"
         );
 
-        when(furnitureCrudService.findById(anyInt())).thenThrow(new ItemNotFoundException());
+        when(furnitureCrudService.update(any(FurnitureDTO.class))).thenThrow(new ItemNotFoundException());
 
         mockMvc.perform(put("/storage_api/furniture/")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -277,12 +277,30 @@ class FurnitureControllerTest {
     @Test
     @DisplayName("Удаление несуществующей мебели выбрасывает ItemNotFoundException")
     void shouldThrowExceptionWhenDeletingNonExistentFurniture() throws Exception {
-        // ...
+        doThrow(new ItemNotFoundException()).when(furnitureCrudService).delete(anyInt());
+
+        int idToDelete = 999;
+
+        mockMvc.perform(delete("/storage_api/furniture/{id}",idToDelete))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Такой товар не найден"))
+                .andExpect(result -> assertInstanceOf(ItemNotFoundException.class,
+                        result.getResolvedException()));
+
+        verify(furnitureCrudService, times(1)).delete(idToDelete);
     }
 
     @Test
     @DisplayName("Удаление мебели по валидному ID возвращает NoContent")
     void shouldDeleteFurnitureById() throws Exception {
-        // ...
+        doNothing().when(furnitureCrudService).delete(anyInt());
+
+        int idToDelete = 1;
+
+        mockMvc.perform(delete("/storage_api/furniture/{id}", idToDelete))
+                .andExpect(status().isNoContent());
+
+        verify(furnitureCrudService, times(1)).delete(idToDelete);
     }
 }

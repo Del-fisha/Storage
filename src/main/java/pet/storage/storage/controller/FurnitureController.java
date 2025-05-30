@@ -1,6 +1,7 @@
 package pet.storage.storage.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pet.storage.storage.dto.FurnitureDTO;
@@ -36,7 +37,7 @@ public class FurnitureController {
 
     @PostMapping("/")
     public ResponseEntity<FurnitureDTO> createFurniture(@RequestBody FurnitureDTO furnitureDTO) {
-        return ResponseEntity.ok(furnitureCrudService.save(furnitureDTO));
+        return new ResponseEntity<>(furnitureCrudService.save(furnitureDTO), HttpStatus.CREATED);
     }
 
     @PutMapping("/")

@@ -199,19 +199,79 @@ class ElectricalControllerTest {
     @Test
     @DisplayName("Создание уже существующего прибора выбрасывает ItemAlreadyExistsException")
     void shouldThrowExceptionWhenCreatingDuplicateElectrical() throws Exception {
-        // ...
+        when(electricalCrudService.save(any(ElectricalDTO.class))).thenThrow(new ItemAlreadyExistsException());
+
+        mockMvc.perform(post("/storage_api/electrical/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(mockElectrical)))
+                .andExpect(status().isConflict())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Такая позиция уже есть на складе"))
+                .andExpect(result -> assertInstanceOf(ItemAlreadyExistsException.class,
+                        result.getResolvedException()));
+
+        verify(electricalCrudService, times(1)).save(any(ElectricalDTO.class));
     }
 
     @Test
     @DisplayName("Обновление существующего прибора возвращает ElectricalDTO")
     void shouldUpdateElectrical() throws Exception {
-        // ...
+        int plusAmount = 3;
+        ElectricalDTO dtoToTest = new ElectricalDTO(
+                "Холодильник",
+                "Bosch",
+                Category.Electrical,
+                Metric.Piece,
+                4.0,
+                64990.0,
+                LocalDate.of(2023, 1, 15),
+                "Встраиваемый холодильник с No Frost",
+                LocalDate.of(2025, 1, 15)
+        );
+
+        mockElectrical.setAmount(mockElectrical.getAmount() + plusAmount);
+
+        when(electricalCrudService.update(any(ElectricalDTO.class))).thenReturn(mockElectrical);
+        mockMvc.perform(put("/storage_api/electrical/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dtoToTest)))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.name").value(dtoToTest.getName()))
+                .andExpect(jsonPath("$.price").value(dtoToTest.getPrice()))
+                .andExpect(jsonPath("$.amount").value(mockElectrical.getAmount()));
+
+        verify(electricalCrudService, times(1)).update(any(ElectricalDTO.class));
+
     }
 
     @Test
     @DisplayName("Обновление несуществующего прибора выбрасывает ItemNotFoundException")
     void shouldThrowExceptionWhenUpdatingNonExistentElectrical() throws Exception {
-        // ...
+        ElectricalDTO mockElectrical1 = new ElectricalDTO(
+                "Пылесос",
+                "Dyson",
+                Category.Electrical,
+                Metric.Piece,
+                1.0,
+                59990.0,
+                LocalDate.of(2024, 5, 20),
+                "Беспроводной с лазерной подсветкой",
+                LocalDate.of(2026, 5, 20)
+        );
+
+        when(electricalCrudService.update(any(ElectricalDTO.class))).thenThrow(new ItemNotFoundException());
+
+        mockMvc.perform(put("/storage_api/electrical/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(mockElectrical1)))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.message").value("Такой товар не найден"))
+                .andExpect(result -> assertInstanceOf(ItemNotFoundException.class,
+                        result.getResolvedException()));
+
+        verify(electricalCrudService, times(1)).update(any(ElectricalDTO.class));
     }
 
     @Test

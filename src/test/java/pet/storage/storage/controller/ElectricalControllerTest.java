@@ -185,8 +185,8 @@ class ElectricalControllerTest {
         when(electricalCrudService.save(any(ElectricalDTO.class))).thenReturn(mockElectrical);
 
         mockMvc.perform(post("/storage_api/electrical/")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(dtoToTest)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dtoToTest)))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.name").value(dtoToTest.getName()))
@@ -202,8 +202,8 @@ class ElectricalControllerTest {
         when(electricalCrudService.save(any(ElectricalDTO.class))).thenThrow(new ItemAlreadyExistsException());
 
         mockMvc.perform(post("/storage_api/electrical/")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(mockElectrical)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(mockElectrical)))
                 .andExpect(status().isConflict())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.message").value("Такая позиция уже есть на складе"))
@@ -233,8 +233,8 @@ class ElectricalControllerTest {
 
         when(electricalCrudService.update(any(ElectricalDTO.class))).thenReturn(mockElectrical);
         mockMvc.perform(put("/storage_api/electrical/")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(dtoToTest)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dtoToTest)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.name").value(dtoToTest.getName()))
@@ -263,8 +263,8 @@ class ElectricalControllerTest {
         when(electricalCrudService.update(any(ElectricalDTO.class))).thenThrow(new ItemNotFoundException());
 
         mockMvc.perform(put("/storage_api/electrical/")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(mockElectrical1)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(mockElectrical1)))
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.message").value("Такой товар не найден"))

@@ -180,8 +180,8 @@ class FurnitureControllerTest {
         when(furnitureCrudService.save(any(FurnitureDTO.class))).thenReturn(mockFurniture);
 
         mockMvc.perform(post("/storage_api/furniture/")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(dtoToTest)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dtoToTest)))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.name").value(dtoToTest.getName()));
@@ -206,8 +206,8 @@ class FurnitureControllerTest {
         when(furnitureCrudService.save(any(FurnitureDTO.class))).thenThrow(new ItemAlreadyExistsException());
 
         mockMvc.perform(post("/storage_api/furniture/")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(dtoToTest)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dtoToTest)))
                 .andExpect(status().isConflict())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.message").value("Такая позиция уже есть на складе"))
@@ -236,8 +236,8 @@ class FurnitureControllerTest {
         when(furnitureCrudService.update(any(FurnitureDTO.class))).thenReturn(mockFurniture);
 
         mockMvc.perform(put("/storage_api/furniture/")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(dtoToTest)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dtoToTest)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.name").value(dtoToTest.getName()))
@@ -263,8 +263,8 @@ class FurnitureControllerTest {
         when(furnitureCrudService.update(any(FurnitureDTO.class))).thenThrow(new ItemNotFoundException());
 
         mockMvc.perform(put("/storage_api/furniture/")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(dtoToTest)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dtoToTest)))
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.message").value("Такой товар не найден"))
@@ -281,7 +281,7 @@ class FurnitureControllerTest {
 
         int idToDelete = 999;
 
-        mockMvc.perform(delete("/storage_api/furniture/{id}",idToDelete))
+        mockMvc.perform(delete("/storage_api/furniture/{id}", idToDelete))
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.message").value("Такой товар не найден"))

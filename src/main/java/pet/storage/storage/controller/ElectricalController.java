@@ -1,6 +1,7 @@
 package pet.storage.storage.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pet.storage.storage.dto.ElectricalDTO;
@@ -36,7 +37,7 @@ public class ElectricalController {
 
     @PostMapping("/")
     public ResponseEntity<ElectricalDTO> save(@RequestBody ElectricalDTO electricalDTO) {
-        return ResponseEntity.ok(electricalCrudService.save(electricalDTO));
+        return new ResponseEntity<>(electricalCrudService.save(electricalDTO), HttpStatus.CREATED);
     }
 
     @PutMapping("/")

@@ -21,10 +21,12 @@ public class FoodCrudService implements CrudService<FoodDTO> {
     private final FoodDtoToEntityConverter foodDtoToEntityConverter;
 
     @Autowired
-    public FoodCrudService(FoodRepository foodRepository) {
+    public FoodCrudService(FoodRepository foodRepository,
+                           FoodDtoToEntityConverter foodDtoToEntityConverter,
+                           FoodEntityToDtoConverter foodEntityToDtoConverter) {
         this.foodRepository = foodRepository;
-        this.foodEntityToDtoConverter = new FoodEntityToDtoConverter();
-        this.foodDtoToEntityConverter = new FoodDtoToEntityConverter();
+        this.foodEntityToDtoConverter = foodEntityToDtoConverter;
+        this.foodDtoToEntityConverter = foodDtoToEntityConverter;
     }
 
     @Override

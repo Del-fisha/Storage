@@ -21,10 +21,12 @@ public class ChemicalCrudService implements CrudService<ChemicalDTO> {
     private final ChemicalEntityToDtoConverter entityToDtoConverter;
 
     @Autowired
-    public ChemicalCrudService(ChemicalRepository repository) {
+    public ChemicalCrudService(ChemicalRepository repository,
+                               ChemicalDtoToEntityConverter dtoToEntityConverter,
+                               ChemicalEntityToDtoConverter entityToDtoConverter) {
         this.chemicalRepository = repository;
-        this.dtoToEntityConverter = new ChemicalDtoToEntityConverter();
-        this.entityToDtoConverter = new ChemicalEntityToDtoConverter();
+        this.dtoToEntityConverter = dtoToEntityConverter;
+        this.entityToDtoConverter = entityToDtoConverter;
 
     }
 

@@ -21,10 +21,12 @@ public class ElectricalCrudService implements CrudService<ElectricalDTO> {
     private final ElectricalEntityToDtoConverter entityToDtoConverter;
 
     @Autowired
-    public ElectricalCrudService(ElectricalRepository repository) {
+    public ElectricalCrudService(ElectricalRepository repository,
+                                 ElectricalDtoToEntityConverter dtoToEntityConverter,
+                                 ElectricalEntityToDtoConverter entityToDtoConverter) {
         this.electricalRepository = repository;
-        this.dtoToEntityConverter = new ElectricalDtoToEntityConverter();
-        this.entityToDtoConverter = new ElectricalEntityToDtoConverter();
+        this.dtoToEntityConverter = dtoToEntityConverter;
+        this.entityToDtoConverter = entityToDtoConverter;
     }
 
 

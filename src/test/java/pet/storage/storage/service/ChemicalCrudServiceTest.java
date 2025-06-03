@@ -81,13 +81,28 @@ class ChemicalCrudServiceTest {
     @Test
     @DisplayName("Успешное получение химиката по ID")
     void findById_Success() {
-        // Заглушки и проверки аналогично FurnitureCrudServiceTest
+        int expectedId = 1;
+        String expectedName = "Отбеливатель";
+        when(chemicalRepository.findById(anyInt())).thenReturn(Optional.of(mockItem));
+        when(entityToDtoConverter.convert(any())).thenReturn(expectedDTO);
+
+        ChemicalDTO actualDTO = chemicalCrudService.findById(expectedId);
+
+        assertEquals(expectedDTO, actualDTO);
+        assertEquals(expectedName, actualDTO.getName());
+
+        verify(chemicalRepository, times(1)).findById(anyInt());
+        verify(entityToDtoConverter, times(1)).convert(any());
     }
 
     @Test
     @DisplayName("Получение химиката по несуществующему ID выбрасывает исключение")
     void findById_NotFound() {
-        // Аналогично FurnitureCrudServiceTest
+        int expectedId = -1;
+
+        when(chemicalRepository.findById(anyInt())).thenReturn(Optional.empty());
+
+        assertThrows(ItemNotFoundException.class, () -> chemicalCrudService.findById(expectedId));
     }
 
     @Test
@@ -117,18 +132,70 @@ class ChemicalCrudServiceTest {
                 LocalDate.of(2027, 4, 5)
         );
 
+        ChemicalItem expectedItem1 = new ChemicalItem(
+                "Средство для мытья посуды 'Лимон'",
+                "FreshClean",
+                Category.Chemicals,
+                Metric.L,
+                0.5,
+                85.0,
+                LocalDate.of(2024, 11, 10),
+                "Жидкость для мытья посуды с ароматом лимона",
+                LocalDate.of(2026, 11, 10)
+        );
+
+        ChemicalItem expectedItem2 = new ChemicalItem(
+                "Средство для мытья пола",
+                "Уютный Дом",
+                Category.Chemicals,
+                Metric.L,
+                1.5,
+                210.0,
+                LocalDate.of(2025, 4, 5),
+                "Универсальное моющее средство для полов",
+                LocalDate.of(2027, 4, 5)
+        );
+
+        List<ChemicalDTO> expectedDTOs = Arrays.asList(expectedDTO, expectedDTO1, expectedDTO2);
+        List<ChemicalItem> expectedItems = Arrays.asList(mockItem, expectedItem1, expectedItem2);
+
+        when(chemicalRepository.findAll()).thenReturn(expectedItems);
+        when(entityToDtoConverter.convert(expectedItem1)).thenReturn(expectedDTO1);
+        when(entityToDtoConverter.convert(expectedItem2)).thenReturn(expectedDTO2);
+        when(entityToDtoConverter.convert(mockItem)).thenReturn(expectedDTO);
+
+        List<ChemicalDTO> actualDTOs = chemicalCrudService.findAll();
+
+        assertEquals(expectedDTOs, actualDTOs);
+        verify(chemicalRepository, times(1)).findAll();
+        verify(entityToDtoConverter, times(3)).convert(any());
     }
 
     @Test
     @DisplayName("Успешное получение химиката по имени")
     void findByName_Success() {
-        // Аналогично FurnitureCrudServiceTest
+        String expectedName = "Отбеливатель";
+
+        when(chemicalRepository.findByName(anyString())).thenReturn(mockItem);
+        when(entityToDtoConverter.convert(any())).thenReturn(expectedDTO);
+
+        ChemicalDTO actualDTO = chemicalCrudService.findByName(expectedName);
+
+        assertEquals(expectedDTO, actualDTO);
+
+        verify(chemicalRepository, times(1)).findByName(anyString());
+        verify(entityToDtoConverter, times(1)).convert(any());
     }
 
     @Test
     @DisplayName("Получение химиката по несуществующему имени выбрасывает исключение")
     void findByName_NotFound() {
-        // Аналогично FurnitureCrudServiceTest
+        String expectedName = "Пятновыводитель";
+        when(chemicalRepository.findByName(anyString())).thenReturn(null);
+
+        assertThrows(ItemNotFoundException.class, () -> chemicalCrudService.findByName(expectedName));
+        verify(chemicalRepository, times(1)).findByName(anyString());
+        verify(entityToDtoConverter, never()).convert(any());
     }
 
     @Test

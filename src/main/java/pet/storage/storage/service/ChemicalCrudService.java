@@ -41,7 +41,7 @@ public class ChemicalCrudService implements CrudService<ChemicalDTO> {
         if (item == null) {
             throw new ItemNotFoundException();
         }
-        return entityToDtoConverter.convert(chemicalRepository.findByName(name));
+        return entityToDtoConverter.convert(item);
     }
 
     @Override

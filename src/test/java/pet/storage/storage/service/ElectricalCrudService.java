@@ -82,13 +82,30 @@ class ElectricalCrudServiceTest {
     @Test
     @DisplayName("Успешное получение электротовара по ID")
     void findById_Success() {
-        // Аналогично FoodCrudServiceTest
+        int idToFind = 1;
+
+        when(electricalRepository.findById(idToFind)).thenReturn(Optional.of(mockItem));
+        when(entityToDtoConverter.convert(any(ElectricalItem.class))).thenReturn(expectedDTO);
+
+        ElectricalDTO actualDTO = electricalCrudService.findById(idToFind);
+
+        assertEquals(expectedDTO, actualDTO);
+
+        verify(electricalRepository, times(1)).findById(idToFind);
+        verify(entityToDtoConverter, times(1)).convert(any(ElectricalItem.class));
     }
 
     @Test
     @DisplayName("Получение электротовара по несуществующему ID выбрасывает исключение")
     void findById_NotFound() {
-        // Аналогично FoodCrudServiceTest
+        int idToFind = -1;
+
+        when(electricalRepository.findById(idToFind)).thenReturn(Optional.empty());
+
+        assertThrows(ItemNotFoundException.class, () -> electricalCrudService.findById(idToFind));
+
+        verify(electricalRepository, times(1)).findById(idToFind);
+        verify(entityToDtoConverter, never()).convert(any(ElectricalItem.class));
     }
 
     @Test
@@ -144,30 +161,100 @@ class ElectricalCrudServiceTest {
 
         List<ElectricalDTO> expectedDTOList = Arrays.asList(expectedDTO, expectedDTO1, expectedDTO2);
         List<ElectricalItem> electricalItems = Arrays.asList(mockItem, mockItem1, mockItem2);
+
+        when(electricalRepository.findAll()).thenReturn(electricalItems);
+        when(entityToDtoConverter.convert(mockItem)).thenReturn(expectedDTO);
+        when(entityToDtoConverter.convert(mockItem1)).thenReturn(expectedDTO1);
+        when(entityToDtoConverter.convert(mockItem2)).thenReturn(expectedDTO2);
+
+        List<ElectricalDTO> actualDTOList = electricalCrudService.findAll();
+
+        assertEquals(expectedDTOList, actualDTOList);
+        verify(electricalRepository, times(1)).findAll();
+        verify(entityToDtoConverter, times(3)).convert(any(ElectricalItem.class));
     }
 
     @Test
     @DisplayName("Успешное получение электротовара по имени")
     void findByName_Success() {
-        // Аналогично FoodCrudServiceTest
+        String nameToFind = "Электрочайник";
+
+        when(electricalRepository.findByName(anyString())).thenReturn(mockItem);
+        when(entityToDtoConverter.convert(any(ElectricalItem.class))).thenReturn(expectedDTO);
+
+        ElectricalDTO actualDTO = electricalCrudService.findByName(nameToFind);
+
+        assertEquals(expectedDTO, actualDTO);
+
+        verify(electricalRepository, times(1)).findByName(nameToFind);
+        verify(entityToDtoConverter, times(1)).convert(any(ElectricalItem.class));
+
     }
 
     @Test
     @DisplayName("Получение электротовара по несуществующему имени выбрасывает исключение")
     void findByName_NotFound() {
-        // Аналогично FoodCrudServiceTest
+        String nameToFind = "Пылесос";
+
+        when(electricalRepository.findByName(anyString())).thenReturn(null);
+
+        assertThrows(ItemNotFoundException.class, () -> electricalCrudService.findByName(nameToFind));
+
+        verify(electricalRepository, times(1)).findByName(nameToFind);
+        verify(entityToDtoConverter, never()).convert(any(ElectricalItem.class));
     }
 
     @Test
     @DisplayName("Создание нового электротовара")
     void create_Success() {
-        // Аналогично FoodCrudServiceTest
+        ElectricalDTO dtoToTest = new ElectricalDTO(
+                "Электрочайник",
+                "Bosch",
+                Category.Electrical,
+                Metric.Piece,
+                1,
+                2100.0,
+                LocalDate.of(2025, 2, 15),
+                "Чайник с защитой от перегрева",
+                LocalDate.of(2027, 2, 15)
+        );
+
+        when(electricalRepository.findByName(anyString())).thenReturn(null);
+        when(electricalRepository.save(any(ElectricalItem.class))).thenReturn(mockItem);
+        when(entityToDtoConverter.convert(any(ElectricalItem.class))).thenReturn(expectedDTO);
+        when(dtoToEntityConverter.convert(any(ElectricalDTO.class))).thenReturn(mockItem);
+
+        ElectricalDTO dto = electricalCrudService.save(dtoToTest);
+
+        assertEquals(expectedDTO, dto);
+
+        verify(electricalRepository, times(1)).save(any(ElectricalItem.class));
+        verify(entityToDtoConverter, times(1)).convert(any(ElectricalItem.class));
+        verify(dtoToEntityConverter, times(1)).convert(any(ElectricalDTO.class));
     }
 
     @Test
     @DisplayName("Создание уже существующего электротовара выбрасывает исключение")
     void create_Already_Exists() {
-        // Аналогично FoodCrudServiceTest
+        ElectricalDTO dtoToTest = new ElectricalDTO(
+                "Электрочайник",
+                "Bosch",
+                Category.Electrical,
+                Metric.Piece,
+                1,
+                2100.0,
+                LocalDate.of(2025, 2, 15),
+                "Чайник с защитой от перегрева",
+                LocalDate.of(2027, 2, 15)
+        );
+
+        when(electricalRepository.findByName(anyString())).thenReturn(mockItem);
+
+        assertThrows(ItemAlreadyExistsException.class, () -> electricalCrudService.save(dtoToTest));
+
+        verify(electricalRepository, times(1)).findByName(anyString());
+        verify(electricalRepository, never()).save(any(ElectricalItem.class));
+        verify(dtoToEntityConverter, never()).convert(any(ElectricalDTO.class));
     }
 
     @Test

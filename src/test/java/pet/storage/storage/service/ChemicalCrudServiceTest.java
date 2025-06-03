@@ -79,7 +79,7 @@ class ChemicalCrudServiceTest {
     }
 
     @Test
-    @DisplayName("Успешное получение химиката по ID")
+    @DisplayName("Успешное получение бытовой химии по ID")
     void findById_Success() {
         int expectedId = 1;
         String expectedName = "Отбеливатель";
@@ -96,7 +96,7 @@ class ChemicalCrudServiceTest {
     }
 
     @Test
-    @DisplayName("Получение химиката по несуществующему ID выбрасывает исключение")
+    @DisplayName("Получение бытовой химии по несуществующему ID выбрасывает исключение")
     void findById_NotFound() {
         int expectedId = -1;
 
@@ -106,7 +106,7 @@ class ChemicalCrudServiceTest {
     }
 
     @Test
-    @DisplayName("Получение всех химикатов")
+    @DisplayName("Получение всех бытовой химии")
     void findAll_Success() {
         ChemicalDTO expectedDTO1 = new ChemicalDTO(
                 "Средство для мытья посуды 'Лимон'",
@@ -172,7 +172,7 @@ class ChemicalCrudServiceTest {
     }
 
     @Test
-    @DisplayName("Успешное получение химиката по имени")
+    @DisplayName("Успешное получение бытовой химии по имени")
     void findByName_Success() {
         String expectedName = "Отбеливатель";
 
@@ -188,7 +188,7 @@ class ChemicalCrudServiceTest {
     }
 
     @Test
-    @DisplayName("Получение химиката по несуществующему имени выбрасывает исключение")
+    @DisplayName("Получение бытовой химии по несуществующему имени выбрасывает исключение")
     void findByName_NotFound() {
         String expectedName = "Пятновыводитель";
         when(chemicalRepository.findByName(anyString())).thenReturn(null);
@@ -199,38 +199,131 @@ class ChemicalCrudServiceTest {
     }
 
     @Test
-    @DisplayName("Создание нового химиката")
+    @DisplayName("Создание новой бытовой химии")
     void create_Success() {
-        // Аналогично FurnitureCrudServiceTest
+        ChemicalDTO dto = new ChemicalDTO(
+                "Отбеливатель",
+                "ЧистоДом",
+                Category.Chemicals,
+                Metric.L,
+                1.0,
+                120.0,
+                LocalDate.of(2025, 2, 15),
+                "Отбеливатель для стирки и уборки",
+                LocalDate.of(2027, 2, 15));
+
+        when(chemicalRepository.findByName(anyString())).thenReturn(null);
+        when(chemicalRepository.save(any(ChemicalItem.class))).thenReturn(mockItem);
+        when(entityToDtoConverter.convert(any(ChemicalItem.class))).thenReturn(expectedDTO);
+        when(dtoToEntityConverter.convert(any(ChemicalDTO.class))).thenReturn(mockItem);
+
+        ChemicalDTO result = chemicalCrudService.save(dto);
+
+        assertEquals(expectedDTO, result);
+
+        verify(chemicalRepository, times(1)).findByName(anyString());
+        verify(chemicalRepository, times(1)).save(any(ChemicalItem.class));
+        verify(entityToDtoConverter, times(1)).convert(any(ChemicalItem.class));
+        verify(dtoToEntityConverter, times(1)).convert(any(ChemicalDTO.class));
     }
 
     @Test
-    @DisplayName("Создание уже существующего химиката выбрасывает исключение")
+    @DisplayName("Создание уже существующей бытовой химии выбрасывает исключение")
     void create_Already_Exists() {
-        // Аналогично FurnitureCrudServiceTest
+        ChemicalDTO dto = new ChemicalDTO(
+                "Отбеливатель",
+                "ЧистоДом",
+                Category.Chemicals,
+                Metric.L,
+                1.0,
+                120.0,
+                LocalDate.of(2025, 2, 15),
+                "Отбеливатель для стирки и уборки",
+                LocalDate.of(2027, 2, 15));
+
+        when(chemicalRepository.findByName(anyString())).thenReturn(mockItem);
+
+        assertThrows(ItemAlreadyExistsException.class, () -> chemicalCrudService.save(dto));
+
+        verify(chemicalRepository, times(1)).findByName(anyString());
+        verify(chemicalRepository, never()).save(any(ChemicalItem.class));
     }
 
     @Test
-    @DisplayName("Изменение химиката")
+    @DisplayName("Изменение бытовой химии")
     void update_Success() {
-        // Аналогично FurnitureCrudServiceTest
+        ChemicalDTO dtoToUpdate = new ChemicalDTO(
+                "Отбеливатель",
+                "ЧистоДом",
+                Category.Chemicals,
+                Metric.L,
+                4.0,
+                120.0,
+                LocalDate.of(2025, 2, 15),
+                "Отбеливатель для стирки и уборки",
+                LocalDate.of(2027, 2, 15));
+
+        mockItem.setAmount(mockItem.getAmount() + 3.0);
+        expectedDTO.setAmount(expectedDTO.getAmount() + 3.0);
+
+        when(chemicalRepository.findByName(anyString())).thenReturn(mockItem);
+        when(chemicalRepository.save(any(ChemicalItem.class))).thenReturn(mockItem);
+        when(entityToDtoConverter.convert(any(ChemicalItem.class))).thenReturn(expectedDTO);
+
+        ChemicalDTO result = chemicalCrudService.update(dtoToUpdate);
+
+        assertEquals(expectedDTO, result);
+        verify(chemicalRepository, times(1)).findByName(anyString());
+        verify(chemicalRepository, times(1)).save(any(ChemicalItem.class));
+        verify(entityToDtoConverter, times(1)).convert(any(ChemicalItem.class));
     }
 
     @Test
-    @DisplayName("Изменение несуществующего химиката выбрасывает исключение")
+    @DisplayName("Изменение несуществующей бытовой химии выбрасывает исключение")
     void update_NotFound() {
-        // Аналогично FurnitureCrudServiceTest
+        ChemicalDTO dtoToUpdate = new ChemicalDTO(
+                "Отбеливатель",
+                "ЧистоДом",
+                Category.Chemicals,
+                Metric.L,
+                4.0,
+                120.0,
+                LocalDate.of(2025, 2, 15),
+                "Отбеливатель для стирки и уборки",
+                LocalDate.of(2027, 2, 15));
+
+        when(chemicalRepository.findByName(anyString())).thenReturn(null);
+
+        assertThrows(ItemNotFoundException.class, () -> chemicalCrudService.update(dtoToUpdate));
+
+        verify(chemicalRepository, times(1)).findByName(anyString());
+        verify(chemicalRepository, never()).save(any(ChemicalItem.class));
     }
 
     @Test
-    @DisplayName("Удаление химиката")
+    @DisplayName("Удаление бытовой химии")
     void delete_Success() {
-        // Аналогично FurnitureCrudServiceTest
+        int idToDelete = 1;
+
+        when(chemicalRepository.findById(anyInt())).thenReturn(Optional.of(mockItem));
+        doNothing().when(chemicalRepository).deleteById(anyInt());
+
+        chemicalCrudService.delete(idToDelete);
+
+        verify(chemicalRepository, times(1)).deleteById(anyInt());
+        verify(chemicalRepository, times(1)).findById(anyInt());
     }
 
     @Test
-    @DisplayName("Удаление несуществующего химиката выбрасывает исключение")
+    @DisplayName("Удаление несуществующей бытовой химии выбрасывает исключение")
     void delete_NotFound() {
-        // Аналогично FurnitureCrudServiceTest
+        int idToDelete = -1;
+
+        when(chemicalRepository.findById(anyInt())).thenReturn(Optional.empty());
+
+        assertThrows(ItemNotFoundException.class, () -> chemicalCrudService.delete(idToDelete));
+
+        verify(chemicalRepository, times(1)).findById(anyInt());
+        verify(chemicalRepository, never()).save(any(ChemicalItem.class));
     }
 }

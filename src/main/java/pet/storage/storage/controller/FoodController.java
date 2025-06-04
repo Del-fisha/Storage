@@ -17,8 +17,8 @@ public class FoodController {
     private final FoodCrudService foodCrudService;
 
     @Autowired
-    public FoodController(FoodCrudService foodRepository) {
-        this.foodCrudService = foodRepository;
+    public FoodController(FoodCrudService crudService) {
+        this.foodCrudService = crudService;
     }
 
     @GetMapping("/id/{id}")

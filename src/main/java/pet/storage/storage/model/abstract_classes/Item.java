@@ -45,7 +45,7 @@ public abstract class Item {
     @Column(nullable = false, name = "date_of_purchase")
     protected LocalDate dateOfPurchase;
 
-    @Column(nullable = false, name = "description")
+    @Column(nullable = true, name = "description")
     protected String description;
 
     public Item(String name, String fabricator, Category category, Metric metric, double amount,

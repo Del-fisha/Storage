@@ -84,7 +84,7 @@ class ElectricalCrudServiceTest {
     void findById_Success() {
         int idToFind = 1;
 
-        when(electricalRepository.findById(idToFind)).thenReturn(Optional.of(mockItem));
+        when(electricalRepository.findById(anyInt())).thenReturn(Optional.of(mockItem));
         when(entityToDtoConverter.convert(any(ElectricalItem.class))).thenReturn(expectedDTO);
 
         ElectricalDTO actualDTO = electricalCrudService.findById(idToFind);
@@ -100,7 +100,7 @@ class ElectricalCrudServiceTest {
     void findById_NotFound() {
         int idToFind = -1;
 
-        when(electricalRepository.findById(idToFind)).thenReturn(Optional.empty());
+        when(electricalRepository.findById(anyInt())).thenReturn(Optional.empty());
 
         assertThrows(ItemNotFoundException.class, () -> electricalCrudService.findById(idToFind));
 
@@ -260,24 +260,70 @@ class ElectricalCrudServiceTest {
     @Test
     @DisplayName("Изменение электротовара")
     void update_Success() {
-        // Аналогично FoodCrudServiceTest
+        ElectricalDTO dtoToTest = new ElectricalDTO(
+                "Электрочайник",
+                "Bosch",
+                Category.Electrical,
+                Metric.Piece,
+                4,
+                2100.0,
+                LocalDate.of(2025, 2, 15),
+                "Чайник с защитой от перегрева",
+                LocalDate.of(2027, 2, 15)
+        );
+
+        mockItem.setAmount(mockItem.getAmount() + 3);
+        expectedDTO.setAmount(expectedDTO.getAmount() + 3);
+
+        when(electricalRepository.findByName(anyString())).thenReturn(mockItem);
+        when(electricalRepository.save(any(ElectricalItem.class))).thenReturn(mockItem);
+        when(entityToDtoConverter.convert(any(ElectricalItem.class))).thenReturn(expectedDTO);
+
+        ElectricalDTO actualDTO = electricalCrudService.update(dtoToTest);
+
+        assertEquals(expectedDTO, actualDTO);
+
+        verify(electricalRepository, times(1)).findByName(anyString());
+        verify(electricalRepository, times(1)).save(any(ElectricalItem.class));
+        verify(entityToDtoConverter, times(1)).convert(any(ElectricalItem.class));
     }
 
     @Test
     @DisplayName("Изменение несуществующего электротовара выбрасывает исключение")
     void update_NotFound() {
-        // Аналогично FoodCrudServiceTest
+        when(electricalRepository.findByName(anyString())).thenReturn(null);
+
+        assertThrows(ItemNotFoundException.class, () -> electricalCrudService.update(expectedDTO));
+
+        verify(electricalRepository, times(1)).findByName(anyString());
+        verify(electricalRepository, never()).save(any(ElectricalItem.class));
+        verify(entityToDtoConverter, never()).convert(any(ElectricalItem.class));
     }
 
     @Test
     @DisplayName("Удаление электротовара")
     void delete_Success() {
-        // Аналогично FoodCrudServiceTest
+        int idToDelete = 1;
+
+        when(electricalRepository.findById(anyInt())).thenReturn(Optional.of(mockItem));
+        doNothing().when(electricalRepository).deleteById(anyInt());
+
+        electricalCrudService.delete(idToDelete);
+
+        verify(electricalRepository, times(1)).deleteById(anyInt());
+        verify(electricalRepository, times(1)).findById(anyInt());
     }
 
     @Test
     @DisplayName("Удаление несуществующего электротовара выбрасывает исключение")
     void delete_NotFound() {
-        // Аналогично FoodCrudServiceTest
+        int idToDelete = -1;
+
+        when(electricalRepository.findById(anyInt())).thenReturn(Optional.empty());
+
+        assertThrows(ItemNotFoundException.class, () -> electricalCrudService.delete(idToDelete));
+
+        verify(electricalRepository, times(1)).findById(anyInt());
+        verify(electricalRepository, never()).deleteById(anyInt());
     }
 }

@@ -176,7 +176,7 @@ class ChemicalControllerTest {
         mockMvc.perform(post("/storage_api/chemical/")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(chemicalDtoToTest)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.name").value(mockChemical.getName()))
                 .andExpect(jsonPath("$.fabricator").value(mockChemical.getFabricator()))

@@ -1,5 +1,6 @@
 package pet.storage.storage.dto;
 
+import jakarta.validation.constraints.FutureOrPresent;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,6 +17,7 @@ public class FoodDTO extends ItemDTO {
 
     private LocalDate dateOfProduction;
 
+    @FutureOrPresent(message = "{validation.expirationDate.futureOrPresent}")
     private LocalDate dateOfEaten;
 
     public FoodDTO(String name, String fabricator, Category category, Metric metric, double amount,

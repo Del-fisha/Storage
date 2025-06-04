@@ -69,7 +69,7 @@ class ElectricalCrudServiceTest {
                 2100.0,
                 LocalDate.of(2025, 2, 15),
                 "Чайник с защитой от перегрева",
-                LocalDate.of(2027, 2, 15)
+                48
         );
     }
 
@@ -132,7 +132,7 @@ class ElectricalCrudServiceTest {
                 8700.0,
                 LocalDate.of(2024, 10, 10),
                 "Мощный пылесос для дома",
-                LocalDate.of(2026, 10, 10)
+                48
         );
 
         ElectricalItem mockItem2 = new ElectricalItem(
@@ -156,7 +156,7 @@ class ElectricalCrudServiceTest {
                 3200.0,
                 LocalDate.of(2025, 5, 5),
                 "Лампа с регулировкой яркости",
-                LocalDate.of(2027, 5, 5)
+                48
         );
 
         List<ElectricalDTO> expectedDTOList = Arrays.asList(expectedDTO, expectedDTO1, expectedDTO2);
@@ -216,7 +216,7 @@ class ElectricalCrudServiceTest {
                 2100.0,
                 LocalDate.of(2025, 2, 15),
                 "Чайник с защитой от перегрева",
-                LocalDate.of(2027, 2, 15)
+                48
         );
 
         when(electricalRepository.findByName(anyString())).thenReturn(null);
@@ -245,7 +245,7 @@ class ElectricalCrudServiceTest {
                 2100.0,
                 LocalDate.of(2025, 2, 15),
                 "Чайник с защитой от перегрева",
-                LocalDate.of(2027, 2, 15)
+                48
         );
 
         when(electricalRepository.findByName(anyString())).thenReturn(mockItem);
@@ -269,7 +269,7 @@ class ElectricalCrudServiceTest {
                 2100.0,
                 LocalDate.of(2025, 2, 15),
                 "Чайник с защитой от перегрева",
-                LocalDate.of(2027, 2, 15)
+                48
         );
 
         mockItem.setAmount(mockItem.getAmount() + 3);

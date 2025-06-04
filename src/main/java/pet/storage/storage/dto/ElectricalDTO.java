@@ -1,5 +1,6 @@
 package pet.storage.storage.dto;
 
+import jakarta.validation.constraints.FutureOrPresent;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,12 +14,16 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 public class ElectricalDTO extends ItemDTO {
+
+    @FutureOrPresent(message = "{validation.guaranty.futureOrPresent}")
     private LocalDate warrantyEndDate;
+    private int warrantyMonths;
 
     public ElectricalDTO(String name, String fabricator, Category category, Metric metric, double amount,
                          double price, LocalDate dateOfPurchase, String description,
-                         LocalDate warrantyEndDate) {
+                         int warrantyMonths) {
         super(name, fabricator, category, metric, amount, price, dateOfPurchase, description);
-        this.warrantyEndDate = warrantyEndDate;
+        this.warrantyMonths = warrantyMonths;
+        this.warrantyEndDate = dateOfPurchase.plusMonths(warrantyMonths);
     }
 }

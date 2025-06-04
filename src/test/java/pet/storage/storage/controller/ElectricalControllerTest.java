@@ -54,7 +54,7 @@ class ElectricalControllerTest {
                 64990.0,
                 LocalDate.of(2023, 1, 15),
                 "Встраиваемый холодильник с No Frost",
-                LocalDate.of(2025, 1, 15)
+                48
         );
     }
 
@@ -139,7 +139,7 @@ class ElectricalControllerTest {
                 8990.0,
                 LocalDate.of(2024, 3, 10),
                 "С грилем и функцией разморозки",
-                LocalDate.of(2024, 7, 1)
+                48
         );
 
         ElectricalDTO mockElectrical2 = new ElectricalDTO(
@@ -151,7 +151,7 @@ class ElectricalControllerTest {
                 59990.0,
                 LocalDate.of(2024, 5, 20),
                 "Беспроводной с лазерной подсветкой",
-                LocalDate.of(2026, 5, 20)
+                48
         );
 
         List<ElectricalDTO> electricalDTOList = List.of(mockElectrical, mockElectrical1, mockElectrical2);
@@ -179,7 +179,7 @@ class ElectricalControllerTest {
                 64990.0,
                 LocalDate.of(2023, 1, 15),
                 "Встраиваемый холодильник с No Frost",
-                LocalDate.of(2025, 1, 15)
+                48
         );
 
         when(electricalCrudService.save(any(ElectricalDTO.class))).thenReturn(mockElectrical);
@@ -226,7 +226,7 @@ class ElectricalControllerTest {
                 64990.0,
                 LocalDate.of(2023, 1, 15),
                 "Встраиваемый холодильник с No Frost",
-                LocalDate.of(2025, 1, 15)
+                48
         );
 
         mockElectrical.setAmount(mockElectrical.getAmount() + plusAmount);
@@ -257,7 +257,7 @@ class ElectricalControllerTest {
                 59990.0,
                 LocalDate.of(2024, 5, 20),
                 "Беспроводной с лазерной подсветкой",
-                LocalDate.of(2026, 5, 20)
+                48
         );
 
         when(electricalCrudService.update(any(ElectricalDTO.class))).thenThrow(new ItemNotFoundException());

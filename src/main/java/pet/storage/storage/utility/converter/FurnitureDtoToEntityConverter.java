@@ -11,6 +11,9 @@ public class FurnitureDtoToEntityConverter implements ConverterOfEntities<Furnit
     public FurnitureItem convert(FurnitureDTO dto) {
         FurnitureItem entity = new FurnitureItem();
 
+        if (dto.getId() != 0) {
+            entity.setId(dto.getId());
+        }
         entity.setName(dto.getName());
         entity.setFabricator(dto.getFabricator());
         entity.setCategory(dto.getCategory());

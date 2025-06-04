@@ -11,6 +11,9 @@ public class ChemicalDtoToEntityConverter implements ConverterOfEntities<Chemica
     public ChemicalItem convert(ChemicalDTO dto) {
         ChemicalItem entity = new ChemicalItem();
 
+        if (dto.getId() != 0) {
+            entity.setId(dto.getId());
+        }
         entity.setName(dto.getName());
         entity.setFabricator(dto.getFabricator());
         entity.setCategory(dto.getCategory());

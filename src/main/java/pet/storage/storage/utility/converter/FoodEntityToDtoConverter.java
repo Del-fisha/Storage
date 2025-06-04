@@ -11,6 +11,7 @@ public class FoodEntityToDtoConverter implements ConverterOfEntities<FoodDTO, Fo
     public FoodDTO convert(FoodItem entity) {
         FoodDTO dto = new FoodDTO();
 
+        dto.setId(entity.getId());
         dto.setName(entity.getName());
         dto.setFabricator(entity.getFabricator());
         dto.setCategory(entity.getCategory());

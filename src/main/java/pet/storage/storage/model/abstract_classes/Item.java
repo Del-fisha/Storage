@@ -2,6 +2,7 @@ package pet.storage.storage.model.abstract_classes;
 
 
 import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,6 +15,7 @@ import java.time.LocalDate;
 @Setter
 @MappedSuperclass
 @NoArgsConstructor
+@EqualsAndHashCode
 public abstract class Item {
 
     @Id

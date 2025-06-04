@@ -10,19 +10,22 @@ public class FoodDtoToEntityConverter implements ConverterOfEntities<FoodItem, F
     @Override
     public FoodItem convert(FoodDTO dto) {
 
-        FoodItem foodItem = new FoodItem();
+        FoodItem entity = new FoodItem();
 
-        foodItem.setName(dto.getName());
-        foodItem.setPrice(dto.getPrice());
-        foodItem.setCategory(dto.getCategory());
-        foodItem.setDateOfEaten(dto.getDateOfEaten());
-        foodItem.setDateOfProduction(dto.getDateOfProduction());
-        foodItem.setDescription(dto.getDescription());
-        foodItem.setAmount(dto.getAmount());
-        foodItem.setDateOfPurchase(dto.getDateOfPurchase());
-        foodItem.setFabricator(dto.getFabricator());
-        foodItem.setMetric(dto.getMetric());
+        if (dto.getId() != 0) {
+            entity.setId(dto.getId());
+        }
+        entity.setName(dto.getName());
+        entity.setPrice(dto.getPrice());
+        entity.setCategory(dto.getCategory());
+        entity.setDateOfEaten(dto.getDateOfEaten());
+        entity.setDateOfProduction(dto.getDateOfProduction());
+        entity.setDescription(dto.getDescription());
+        entity.setAmount(dto.getAmount());
+        entity.setDateOfPurchase(dto.getDateOfPurchase());
+        entity.setFabricator(dto.getFabricator());
+        entity.setMetric(dto.getMetric());
 
-        return foodItem;
+        return entity;
     }
 }

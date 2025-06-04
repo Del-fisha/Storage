@@ -11,6 +11,9 @@ public class ElectricalDtoToEntityConverter implements ConverterOfEntities<Elect
     public ElectricalItem convert(ElectricalDTO dto) {
         ElectricalItem entity = new ElectricalItem();
 
+        if (dto.getId() != 0) {
+            entity.setId(dto.getId());
+        }
         entity.setName(dto.getName());
         entity.setFabricator(dto.getFabricator());
         entity.setCategory(dto.getCategory());

@@ -1,5 +1,6 @@
 package pet.storage.storage.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,12 +39,12 @@ public class FoodController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<FoodDTO> addFood(@RequestBody FoodDTO dto) {
+    public ResponseEntity<FoodDTO> addFood(@Valid @RequestBody FoodDTO dto) {
         return new ResponseEntity<>(foodCrudService.save(dto), HttpStatus.CREATED);
     }
 
     @PutMapping("/")
-    public ResponseEntity<FoodDTO> updateFood(@RequestBody FoodDTO dto) {
+    public ResponseEntity<FoodDTO> updateFood(@Valid @RequestBody FoodDTO dto) {
         return new ResponseEntity<>(foodCrudService.update(dto), HttpStatus.OK);
     }
 

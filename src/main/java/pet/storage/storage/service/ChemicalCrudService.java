@@ -1,7 +1,9 @@
 package pet.storage.storage.service;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import pet.storage.storage.dto.ChemicalDTO;
 import pet.storage.storage.exceptions.ItemAlreadyExistsException;
 import pet.storage.storage.exceptions.ItemNotFoundException;
@@ -14,6 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Validated
 public class ChemicalCrudService implements CrudService<ChemicalDTO> {
 
     private final ChemicalRepository chemicalRepository;
@@ -53,7 +56,7 @@ public class ChemicalCrudService implements CrudService<ChemicalDTO> {
     }
 
     @Override
-    public ChemicalDTO save(ChemicalDTO chemicalDTO) {
+    public ChemicalDTO save(@Valid ChemicalDTO chemicalDTO) {
         ChemicalItem itemToFind = chemicalRepository.findByName(chemicalDTO.getName());
         if (itemToFind != null) {
             throw new ItemAlreadyExistsException();
@@ -63,7 +66,7 @@ public class ChemicalCrudService implements CrudService<ChemicalDTO> {
     }
 
     @Override
-    public ChemicalDTO update(ChemicalDTO chemicalDTO) {
+    public ChemicalDTO update(@Valid ChemicalDTO chemicalDTO) {
         ChemicalItem chemicalItem = chemicalRepository.findByName(chemicalDTO.getName());
         if (chemicalItem == null) {
             throw new ItemNotFoundException();

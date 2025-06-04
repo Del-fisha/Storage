@@ -1,5 +1,7 @@
 package pet.storage.storage.service;
 
+import org.springframework.validation.annotation.Validated;
+
 import java.util.List;
 
 public interface CrudService<T> {

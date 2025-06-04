@@ -1,6 +1,7 @@
 package pet.storage.storage.dto;
 
 import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,6 +18,7 @@ public class ElectricalDTO extends ItemDTO {
 
     @FutureOrPresent(message = "{validation.guaranty.futureOrPresent}")
     private LocalDate warrantyEndDate;
+    @Positive
     private int warrantyMonths;
 
     public ElectricalDTO(String name, String fabricator, Category category, Metric metric, double amount,

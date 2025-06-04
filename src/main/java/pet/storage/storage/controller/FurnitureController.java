@@ -1,5 +1,6 @@
 package pet.storage.storage.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,12 +37,12 @@ public class FurnitureController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<FurnitureDTO> createFurniture(@RequestBody FurnitureDTO furnitureDTO) {
+    public ResponseEntity<FurnitureDTO> createFurniture(@Valid @RequestBody FurnitureDTO furnitureDTO) {
         return new ResponseEntity<>(furnitureCrudService.save(furnitureDTO), HttpStatus.CREATED);
     }
 
     @PutMapping("/")
-    public ResponseEntity<FurnitureDTO> updateFurniture(@RequestBody FurnitureDTO furnitureDTO) {
+    public ResponseEntity<FurnitureDTO> updateFurniture(@Valid @RequestBody FurnitureDTO furnitureDTO) {
         return ResponseEntity.ok(furnitureCrudService.update(furnitureDTO));
     }
 

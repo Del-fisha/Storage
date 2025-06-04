@@ -1,7 +1,9 @@
 package pet.storage.storage.service;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import pet.storage.storage.dto.FurnitureDTO;
 import pet.storage.storage.exceptions.ItemAlreadyExistsException;
 import pet.storage.storage.exceptions.ItemNotFoundException;
@@ -14,6 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Validated
 public class FurnitureCrudService implements CrudService<FurnitureDTO> {
 
     private final FurnitureRepository furnitureRepository;
@@ -53,7 +56,7 @@ public class FurnitureCrudService implements CrudService<FurnitureDTO> {
     }
 
     @Override
-    public FurnitureDTO save(FurnitureDTO furnitureDTO) {
+    public FurnitureDTO save(@Valid FurnitureDTO furnitureDTO) {
         FurnitureItem itemToFind = furnitureRepository.findByName(furnitureDTO.getName());
         if (itemToFind != null) {
             throw new ItemAlreadyExistsException();
@@ -64,7 +67,7 @@ public class FurnitureCrudService implements CrudService<FurnitureDTO> {
     }
 
     @Override
-    public FurnitureDTO update(FurnitureDTO furnitureDTO) {
+    public FurnitureDTO update(@Valid FurnitureDTO furnitureDTO) {
         FurnitureItem furnitureItem = furnitureRepository.findByName(furnitureDTO.getName());
         if (furnitureItem == null) {
             throw new ItemNotFoundException();

@@ -51,7 +51,7 @@ class ChemicalControllerTest {
         mockChemical = new ChemicalDTO(
                 "Domestos", "Unilever", Category.Chemicals, Metric.L, 1.0, 150.0,
                 LocalDate.of(2024, 5, 1), "Дезинфицирующее средство",
-                LocalDate.of(2025, 5, 1)
+                LocalDate.of(2029, 5, 1)
         );
     }
 
@@ -168,7 +168,7 @@ class ChemicalControllerTest {
         ChemicalDTO chemicalDtoToTest = new ChemicalDTO(
                 "Domestos", "Unilever", Category.Chemicals, Metric.L, 1.0, 150.0,
                 LocalDate.of(2024, 5, 1), "Дезинфицирующее средство",
-                LocalDate.of(2025, 5, 1)
+                LocalDate.of(2029, 5, 1)
         );
 
         when(chemicalCrudService.save(any(ChemicalDTO.class))).thenReturn(mockChemical);
@@ -208,7 +208,7 @@ class ChemicalControllerTest {
         ChemicalDTO chemicalDtoToTest = new ChemicalDTO(
                 "Domestos", "Unilever", Category.Chemicals, Metric.L, 3.0, 150.0,
                 LocalDate.of(2024, 5, 1), "Дезинфицирующее средство",
-                LocalDate.of(2025, 5, 1)
+                LocalDate.of(2029, 5, 1)
         );
 
         mockChemical.setAmount(chemicalDtoToTest.getAmount());

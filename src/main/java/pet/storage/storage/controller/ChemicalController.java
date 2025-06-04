@@ -1,6 +1,7 @@
 package pet.storage.storage.controller;
 
 
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -40,12 +41,12 @@ public class ChemicalController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<ChemicalDTO> create(@RequestBody ChemicalDTO chemicalDTO) {
+    public ResponseEntity<ChemicalDTO> create(@Valid @RequestBody ChemicalDTO chemicalDTO) {
         return new ResponseEntity<>(chemicalCrudService.save(chemicalDTO), HttpStatus.CREATED);
     }
 
     @PutMapping("/")
-    public ResponseEntity<ChemicalDTO> update(@RequestBody ChemicalDTO chemicalDTO) {
+    public ResponseEntity<ChemicalDTO> update(@Valid @RequestBody ChemicalDTO chemicalDTO) {
         return ResponseEntity.ok(chemicalCrudService.update(chemicalDTO));
     }
 

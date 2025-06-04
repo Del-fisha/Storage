@@ -1,7 +1,9 @@
 package pet.storage.storage.service;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import pet.storage.storage.dto.FoodDTO;
 import pet.storage.storage.exceptions.ItemAlreadyExistsException;
 import pet.storage.storage.exceptions.ItemNotFoundException;
@@ -14,6 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Validated
 public class FoodCrudService implements CrudService<FoodDTO> {
 
     private final FoodRepository foodRepository;
@@ -50,7 +53,7 @@ public class FoodCrudService implements CrudService<FoodDTO> {
     }
 
     @Override
-    public FoodDTO save(FoodDTO foodDTO) {
+    public FoodDTO save(@Valid FoodDTO foodDTO) {
         FoodItem itemToFind = foodRepository.findByName(foodDTO.getName());
         if (itemToFind != null) {
             throw new ItemAlreadyExistsException();
@@ -60,7 +63,7 @@ public class FoodCrudService implements CrudService<FoodDTO> {
     }
 
     @Override
-    public FoodDTO update(FoodDTO foodDTO) {
+    public FoodDTO update(@Valid FoodDTO foodDTO) {
         FoodItem foodItem = foodRepository.findByName(foodDTO.getName());
         if (foodItem == null) {
             throw new ItemNotFoundException();

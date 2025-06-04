@@ -1,9 +1,6 @@
 package pet.storage.storage.dto.abstract_classes;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.PastOrPresent;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import pet.storage.storage.model.enum_classes.Category;
 import pet.storage.storage.model.enum_classes.Metric;
@@ -24,10 +21,10 @@ public class ItemDTO {
     @NotBlank(message = "{validation.fabricator.notBlank}")
     protected String fabricator;
 
-    @NotBlank(message = "{validation.category.notNull}")
+    @NotNull(message = "{validation.category.notNull}")
     protected Category category;
 
-    @NotBlank(message = "{validation.metric.notNull}")
+    @NotNull(message = "{validation.metric.notNull}")
     protected Metric metric;
 
     @Positive(message = "{validation.amount.positive}")
@@ -37,7 +34,6 @@ public class ItemDTO {
     protected double price;
 
     @PastOrPresent(message = "{validation.dateOfPurchase.pastOrPresent}")
-    @NotBlank(message = "{validation.dateOfPurchase.notNull}")
     protected LocalDate dateOfPurchase;
 
     protected String description;

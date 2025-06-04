@@ -1,5 +1,6 @@
 package pet.storage.storage.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,12 +37,12 @@ public class ElectricalController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<ElectricalDTO> save(@RequestBody ElectricalDTO electricalDTO) {
+    public ResponseEntity<ElectricalDTO> save(@Valid @RequestBody ElectricalDTO electricalDTO) {
         return new ResponseEntity<>(electricalCrudService.save(electricalDTO), HttpStatus.CREATED);
     }
 
     @PutMapping("/")
-    public ResponseEntity<ElectricalDTO> update(@RequestBody ElectricalDTO electricalDTO) {
+    public ResponseEntity<ElectricalDTO> update(@Valid @RequestBody ElectricalDTO electricalDTO) {
         return ResponseEntity.ok(electricalCrudService.update(electricalDTO));
     }
 

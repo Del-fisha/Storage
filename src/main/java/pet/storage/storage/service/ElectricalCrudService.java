@@ -1,7 +1,9 @@
 package pet.storage.storage.service;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import pet.storage.storage.dto.ElectricalDTO;
 import pet.storage.storage.exceptions.ItemAlreadyExistsException;
 import pet.storage.storage.exceptions.ItemNotFoundException;
@@ -14,6 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Validated
 public class ElectricalCrudService implements CrudService<ElectricalDTO> {
 
     private final ElectricalRepository electricalRepository;
@@ -51,7 +54,7 @@ public class ElectricalCrudService implements CrudService<ElectricalDTO> {
     }
 
     @Override
-    public ElectricalDTO save(ElectricalDTO electricalDTO) {
+    public ElectricalDTO save(@Valid ElectricalDTO electricalDTO) {
         ElectricalItem electricalItem = electricalRepository.findByName(electricalDTO.getName());
         if (electricalItem != null) {
             throw new ItemAlreadyExistsException();
@@ -61,7 +64,7 @@ public class ElectricalCrudService implements CrudService<ElectricalDTO> {
     }
 
     @Override
-    public ElectricalDTO update(ElectricalDTO electricalDTO) {
+    public ElectricalDTO update(@Valid ElectricalDTO electricalDTO) {
         ElectricalItem electricalItem = electricalRepository.findByName(electricalDTO.getName());
         if (electricalItem == null) {
             throw new ItemNotFoundException();

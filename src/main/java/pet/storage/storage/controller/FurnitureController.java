@@ -46,7 +46,7 @@ public class FurnitureController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<FurnitureDTO> deleteFurniture(@PathVariable("id") int id) {
+    public ResponseEntity<Void> deleteFurniture(@PathVariable("id") int id) {
         furnitureCrudService.delete(id);
         return ResponseEntity.noContent().build();
     }

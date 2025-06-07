@@ -15,8 +15,7 @@ import pet.storage.storage.model.FoodItem;
 import pet.storage.storage.model.enum_classes.Category;
 import pet.storage.storage.model.enum_classes.Metric;
 import pet.storage.storage.repository.FoodRepository;
-import pet.storage.storage.utility.converter.FoodDtoToEntityConverter;
-import pet.storage.storage.utility.converter.FoodEntityToDtoConverter;
+import pet.storage.storage.utility.converter.FoodConverter;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -36,10 +35,7 @@ class FoodCrudServiceTest {
     private FoodRepository foodRepository;
 
     @Mock
-    private FoodEntityToDtoConverter entityToDtoConverter;
-
-    @Mock
-    private FoodDtoToEntityConverter dtoToEntityConverter;
+    private FoodConverter converter;
 
     @InjectMocks
     private FoodCrudService foodCrudService;
@@ -88,14 +84,14 @@ class FoodCrudServiceTest {
         int expectedId = 1;
 
         when(foodRepository.findById(anyInt())).thenReturn(Optional.of(mockItem));
-        when(entityToDtoConverter.convert(any(FoodItem.class))).thenReturn(expectedDTO);
+        when(converter.convert(any(FoodItem.class))).thenReturn(expectedDTO);
 
         FoodDTO actualDTO = foodCrudService.findById(expectedId);
 
         assertEquals(expectedDTO, actualDTO);
 
         verify(foodRepository, times(1)).findById(anyInt());
-        verify(entityToDtoConverter, times(1)).convert(any(FoodItem.class));
+        verify(converter, times(1)).convert(any(FoodItem.class));
     }
 
     @Test
@@ -108,7 +104,7 @@ class FoodCrudServiceTest {
         assertThrows(ItemNotFoundException.class, () -> foodCrudService.findById(expectedId));
 
         verify(foodRepository, times(1)).findById(anyInt());
-        verify(entityToDtoConverter, never()).convert(any(FoodItem.class));
+        verify(converter, never()).convert(any(FoodItem.class));
     }
 
     @Test
@@ -168,15 +164,15 @@ class FoodCrudServiceTest {
         List<FoodItem> foodItemList = Arrays.asList(mockItem, mockItem1, mockItem2);
 
         when(foodRepository.findAll()).thenReturn(foodItemList);
-        when(entityToDtoConverter.convert(mockItem)).thenReturn(expectedDTO);
-        when(entityToDtoConverter.convert(mockItem1)).thenReturn(expectedDTO1);
-        when(entityToDtoConverter.convert(mockItem2)).thenReturn(expectedDTO2);
+        when(converter.convert(mockItem)).thenReturn(expectedDTO);
+        when(converter.convert(mockItem1)).thenReturn(expectedDTO1);
+        when(converter.convert(mockItem2)).thenReturn(expectedDTO2);
 
         List<FoodDTO> actualDTOList = foodCrudService.findAll();
 
         assertEquals(actualDTOList, foodDTOList);
         verify(foodRepository, times(1)).findAll();
-        verify(entityToDtoConverter, times(3)).convert(any(FoodItem.class));
+        verify(converter, times(3)).convert(any(FoodItem.class));
     }
 
     @Test
@@ -185,14 +181,14 @@ class FoodCrudServiceTest {
         String nameToFind = "Хлеб";
 
         when(foodRepository.findByName(anyString())).thenReturn(mockItem);
-        when(entityToDtoConverter.convert(any(FoodItem.class))).thenReturn(expectedDTO);
+        when(converter.convert(any(FoodItem.class))).thenReturn(expectedDTO);
 
         FoodDTO actualDTO = foodCrudService.findByName(nameToFind);
 
         assertEquals(expectedDTO, actualDTO);
 
         verify(foodRepository, times(1)).findByName(anyString());
-        verify(entityToDtoConverter, times(1)).convert(any(FoodItem.class));
+        verify(converter, times(1)).convert(any(FoodItem.class));
     }
 
     @Test
@@ -205,7 +201,7 @@ class FoodCrudServiceTest {
         assertThrows(ItemNotFoundException.class, () -> foodCrudService.findByName(nameToFind));
 
         verify(foodRepository, times(1)).findByName(anyString());
-        verify(entityToDtoConverter, never()).convert(any(FoodItem.class));
+        verify(converter, never()).convert(any(FoodItem.class));
     }
 
     @Test
@@ -225,15 +221,15 @@ class FoodCrudServiceTest {
         );
 
         when(foodRepository.save(any(FoodItem.class))).thenReturn(mockItem);
-        when(entityToDtoConverter.convert(any(FoodItem.class))).thenReturn(expectedDTO);
-        when(dtoToEntityConverter.convert(any(FoodDTO.class))).thenReturn(mockItem);
+        when(converter.convert(any(FoodItem.class))).thenReturn(expectedDTO);
+        when(converter.convert(any(FoodDTO.class))).thenReturn(mockItem);
 
         FoodDTO result = foodCrudService.save(dto);
 
         assertEquals(expectedDTO, result);
 
         verify(foodRepository, times(1)).save(any(FoodItem.class));
-        verify(entityToDtoConverter, times(1)).convert(any(FoodItem.class));
+        verify(converter, times(1)).convert(any(FoodItem.class));
         verify(foodRepository, times(1)).findByName(anyString());
     }
 
@@ -245,7 +241,7 @@ class FoodCrudServiceTest {
         assertThrows(ItemAlreadyExistsException.class, () -> foodCrudService.save(expectedDTO));
 
         verify(foodRepository, times(1)).findByName(anyString());
-        verify(entityToDtoConverter, never()).convert(any(FoodItem.class));
+        verify(converter, never()).convert(any(FoodItem.class));
         verify(foodRepository, never()).save(any(FoodItem.class));
     }
 
@@ -268,29 +264,32 @@ class FoodCrudServiceTest {
         mockItem.setAmount(mockItem.getAmount() + 3.0);
         expectedDTO.setAmount(expectedDTO.getAmount() + 3.0);
 
-        when(foodRepository.findByName(anyString())).thenReturn(mockItem);
+        when(foodRepository.findById(anyInt())).thenReturn(Optional.of(mockItem));
         when(foodRepository.save(any(FoodItem.class))).thenReturn(mockItem);
-        when(entityToDtoConverter.convert(any(FoodItem.class))).thenReturn(expectedDTO);
+        when(converter.convert(any(FoodItem.class))).thenReturn(expectedDTO);
+        when(converter.convert(any(FoodDTO.class))).thenReturn(mockItem);
 
 
         FoodDTO result = foodCrudService.update(dto);
 
         assertEquals(expectedDTO, result);
 
-        verify(foodRepository, times(1)).findByName(anyString());
-        verify(entityToDtoConverter, times(1)).convert(any(FoodItem.class));
+        verify(foodRepository, never()).findByName(anyString());
+        verify(foodRepository, times(1)).findById(anyInt());
+        verify(converter, times(1)).convert(any(FoodItem.class));
         verify(foodRepository, times(1)).save(any(FoodItem.class));
+        verify(converter, times(1)).convert(any(FoodItem.class));
     }
 
     @Test
     @DisplayName("Изменение несуществующего продукта выбрасывает исключение")
     void update_NotFound() {
-        when(foodRepository.findByName(anyString())).thenReturn(null);
+        when(foodRepository.findById(anyInt())).thenReturn(Optional.empty());
 
         assertThrows(ItemNotFoundException.class, () -> foodCrudService.update(expectedDTO));
 
-        verify(foodRepository, times(1)).findByName(anyString());
-        verify(entityToDtoConverter, never()).convert(any(FoodItem.class));
+        verify(foodRepository, times(1)).findById(anyInt());
+        verify(converter, never()).convert(any(FoodItem.class));
         verify(foodRepository, never()).save(any(FoodItem.class));
     }
 

@@ -28,8 +28,8 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(FurnitureController.class)
-@ContextConfiguration(classes = {FurnitureController.class, GlobalExceptionHandler.class})
+@WebMvcTest(FurnitureCrudController.class)
+@ContextConfiguration(classes = {FurnitureCrudController.class, GlobalExceptionHandler.class})
 class FurnitureControllerTest {
 
     @Autowired

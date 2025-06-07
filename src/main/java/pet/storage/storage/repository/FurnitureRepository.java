@@ -5,6 +5,5 @@ import org.springframework.stereotype.Repository;
 import pet.storage.storage.model.FurnitureItem;
 
 @Repository
-public interface FurnitureRepository extends JpaRepository<FurnitureItem, Integer> {
-    FurnitureItem findByName(String name);
+public interface FurnitureRepository extends BaseRepository <FurnitureItem> {
 }

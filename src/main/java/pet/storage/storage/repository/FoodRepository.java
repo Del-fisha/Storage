@@ -5,6 +5,5 @@ import org.springframework.stereotype.Repository;
 import pet.storage.storage.model.FoodItem;
 
 @Repository
-public interface FoodRepository extends JpaRepository<FoodItem, Integer> {
-    FoodItem findByName(String name);
+public interface FoodRepository extends BaseRepository <FoodItem> {
 }

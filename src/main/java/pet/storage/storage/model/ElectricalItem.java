@@ -21,10 +21,23 @@ public class ElectricalItem extends Item {
     @Column(name = "warranty_end_date")
     private LocalDate warrantyEndDate;
 
+    @Column(name = "warranty_months")
+    private int warrantyMonths;
+
     public ElectricalItem(String name, String fabricator, Category category, Metric metric, double amount,
-                          double price, LocalDate dateOfPurchase, String description, LocalDate warrantyEndDate) {
+                          double price, LocalDate dateOfPurchase, String description,
+                          LocalDate warrantyEndDate, int warrantyMonths) {
 
         super(name, fabricator, category, metric, amount, price, dateOfPurchase, description);
         this.warrantyEndDate = warrantyEndDate;
+        this.warrantyMonths = warrantyMonths;
+    }
+
+    public ElectricalItem(String name, String fabricator, Category category, Metric metric, double amount,
+                          double price, LocalDate dateOfPurchase, String description,
+                          int warrantyMonths) {
+
+        super(name, fabricator, category, metric, amount, price, dateOfPurchase, description);
+        this.warrantyMonths = warrantyMonths;
     }
 }

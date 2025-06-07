@@ -48,7 +48,7 @@ databaseChangeLog:
                   name: description
                   type: VARCHAR(255)
                   constraints:
-                    nullable: false
+                    nullable: true
               - column:
                   name: end_date
                   type: DATE
@@ -102,10 +102,13 @@ databaseChangeLog:
                   name: description
                   type: VARCHAR(255)
                   constraints:
-                    nullable: false
+                    nullable: true
               - column:
                   name: warranty_end_date
                   type: DATE
+              - column:
+                  name: warranty_months
+                  type: INTEGER
 
   - changeSet:
       id: 003-create-food-item-table
@@ -156,7 +159,7 @@ databaseChangeLog:
                   name: description
                   type: VARCHAR(255)
                   constraints:
-                    nullable: false
+                    nullable: true
               - column:
                   name: date_of_production
                   type: DATE
@@ -213,7 +216,7 @@ databaseChangeLog:
                   name: description
                   type: VARCHAR(255)
                   constraints:
-                    nullable: false
+                    nullable: true
   - changeSet:
       id: 000-create-hibernate-sequences
       author: system

@@ -1,91 +1,32 @@
 package pet.storage.storage.service;
 
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import pet.storage.storage.dto.ElectricalDTO;
-import pet.storage.storage.exceptions.ItemAlreadyExistsException;
-import pet.storage.storage.exceptions.ItemNotFoundException;
 import pet.storage.storage.model.ElectricalItem;
 import pet.storage.storage.repository.ElectricalRepository;
-import pet.storage.storage.utility.converter.ElectricalDtoToEntityConverter;
-import pet.storage.storage.utility.converter.ElectricalEntityToDtoConverter;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import pet.storage.storage.utility.converter.ElectricalConverter;
 
 @Service
 @Validated
-public class ElectricalCrudService implements CrudService<ElectricalDTO> {
-
-    private final ElectricalRepository electricalRepository;
-    private final ElectricalDtoToEntityConverter dtoToEntityConverter;
-    private final ElectricalEntityToDtoConverter entityToDtoConverter;
+public class ElectricalCrudService extends BaseCrudService<ElectricalDTO, ElectricalItem, ElectricalRepository> {
 
     @Autowired
     public ElectricalCrudService(ElectricalRepository repository,
-                                 ElectricalDtoToEntityConverter dtoToEntityConverter,
-                                 ElectricalEntityToDtoConverter entityToDtoConverter) {
-        this.electricalRepository = repository;
-        this.dtoToEntityConverter = dtoToEntityConverter;
-        this.entityToDtoConverter = entityToDtoConverter;
-    }
-
-
-    @Override
-    public ElectricalDTO findById(int id) {
-        return entityToDtoConverter.convert(electricalRepository.findById(id).orElseThrow(ItemNotFoundException::new));
+                                 ElectricalConverter converter) {
+        super(repository, converter);
     }
 
     @Override
-    public ElectricalDTO findByName(String name) {
-        ElectricalItem electricalItem = electricalRepository.findByName(name);
-        if (electricalItem == null) {
-            throw new ItemNotFoundException();
-        }
-        return entityToDtoConverter.convert(electricalItem);
-    }
-
-    @Override
-    public List<ElectricalDTO> findAll() {
-        List<ElectricalItem> itemList = electricalRepository.findAll();
-        return itemList.stream().map(entityToDtoConverter::convert).collect(Collectors.toList());
-    }
-
-    @Override
-    public ElectricalDTO save(@Valid ElectricalDTO electricalDTO) {
-        ElectricalItem electricalItem = electricalRepository.findByName(electricalDTO.getName());
-        if (electricalItem != null) {
-            throw new ItemAlreadyExistsException();
-        }
-
-        return entityToDtoConverter.convert(electricalRepository.save(dtoToEntityConverter.convert(electricalDTO)));
-    }
-
-    @Override
-    public ElectricalDTO update(@Valid ElectricalDTO electricalDTO) {
-        ElectricalItem electricalItem = electricalRepository.findByName(electricalDTO.getName());
-        if (electricalItem == null) {
-            throw new ItemNotFoundException();
-        }
-
-        electricalItem.setName(electricalDTO.getName());
-        electricalItem.setAmount(electricalDTO.getAmount());
-        electricalItem.setFabricator(electricalDTO.getFabricator());
-        electricalItem.setMetric(electricalDTO.getMetric());
-        electricalItem.setDescription(electricalDTO.getDescription());
-        electricalItem.setPrice(electricalDTO.getPrice());
-        electricalItem.setDateOfPurchase(electricalDTO.getDateOfPurchase());
-        electricalItem.setCategory(electricalDTO.getCategory());
-        electricalItem.setWarrantyEndDate(electricalDTO.getWarrantyEndDate());
-
-        return entityToDtoConverter.convert(electricalRepository.save(electricalItem));
-    }
-
-    @Override
-    public void delete(int id) {
-        ElectricalItem item = electricalRepository.findById(id).orElseThrow(ItemNotFoundException::new);
-        electricalRepository.deleteById(id);
+    public ElectricalDTO save(ElectricalDTO dto) {
+        System.out.println("Dto date of purchase : " + dto.getDateOfPurchase());
+        System.out.println("Dto war months: " + dto.getWarrantyMonths());
+        System.out.println("End date : " + dto.getWarrantyEndDate());
+        System.out.println("Logic.....................");
+        dto.setWarrantyEndDate(dto.getDateOfPurchase().plusMonths(dto.getWarrantyMonths()));
+        System.out.println("Now end date is : " + dto.getWarrantyEndDate());
+        System.out.println("saving");
+        return super.save(dto);
     }
 }

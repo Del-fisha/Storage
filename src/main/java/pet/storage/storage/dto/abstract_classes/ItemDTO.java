@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
-public class ItemDTO {
+public abstract class ItemDTO {
     protected int id;
 
     @NotBlank(message = "{validation.name.notBlank}")

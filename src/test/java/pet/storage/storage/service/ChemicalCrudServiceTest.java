@@ -15,8 +15,7 @@ import pet.storage.storage.model.ChemicalItem;
 import pet.storage.storage.model.enum_classes.Category;
 import pet.storage.storage.model.enum_classes.Metric;
 import pet.storage.storage.repository.ChemicalRepository;
-import pet.storage.storage.utility.converter.ChemicalDtoToEntityConverter;
-import pet.storage.storage.utility.converter.ChemicalEntityToDtoConverter;
+import pet.storage.storage.utility.converter.ChemicalConverter;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -35,10 +34,7 @@ class ChemicalCrudServiceTest {
     private ChemicalRepository chemicalRepository;
 
     @Mock
-    private ChemicalEntityToDtoConverter entityToDtoConverter;
-
-    @Mock
-    private ChemicalDtoToEntityConverter dtoToEntityConverter;
+    private ChemicalConverter converter;
 
     @InjectMocks
     private ChemicalCrudService chemicalCrudService;
@@ -84,7 +80,7 @@ class ChemicalCrudServiceTest {
         int expectedId = 1;
         String expectedName = "Отбеливатель";
         when(chemicalRepository.findById(anyInt())).thenReturn(Optional.of(mockItem));
-        when(entityToDtoConverter.convert(any())).thenReturn(expectedDTO);
+        when(converter.convert(any(ChemicalItem.class))).thenReturn(expectedDTO);
 
         ChemicalDTO actualDTO = chemicalCrudService.findById(expectedId);
 
@@ -92,7 +88,7 @@ class ChemicalCrudServiceTest {
         assertEquals(expectedName, actualDTO.getName());
 
         verify(chemicalRepository, times(1)).findById(anyInt());
-        verify(entityToDtoConverter, times(1)).convert(any());
+        verify(converter, times(1)).convert(any(ChemicalItem.class));
     }
 
     @Test
@@ -160,15 +156,15 @@ class ChemicalCrudServiceTest {
         List<ChemicalItem> expectedItems = Arrays.asList(mockItem, expectedItem1, expectedItem2);
 
         when(chemicalRepository.findAll()).thenReturn(expectedItems);
-        when(entityToDtoConverter.convert(expectedItem1)).thenReturn(expectedDTO1);
-        when(entityToDtoConverter.convert(expectedItem2)).thenReturn(expectedDTO2);
-        when(entityToDtoConverter.convert(mockItem)).thenReturn(expectedDTO);
+        when(converter.convert(expectedItem1)).thenReturn(expectedDTO1);
+        when(converter.convert(expectedItem2)).thenReturn(expectedDTO2);
+        when(converter.convert(mockItem)).thenReturn(expectedDTO);
 
         List<ChemicalDTO> actualDTOs = chemicalCrudService.findAll();
 
         assertEquals(expectedDTOs, actualDTOs);
         verify(chemicalRepository, times(1)).findAll();
-        verify(entityToDtoConverter, times(3)).convert(any());
+        verify(converter, times(3)).convert(any(ChemicalItem.class));
     }
 
     @Test
@@ -177,14 +173,14 @@ class ChemicalCrudServiceTest {
         String expectedName = "Отбеливатель";
 
         when(chemicalRepository.findByName(anyString())).thenReturn(mockItem);
-        when(entityToDtoConverter.convert(any())).thenReturn(expectedDTO);
+        when(converter.convert(any(ChemicalItem.class))).thenReturn(expectedDTO);
 
         ChemicalDTO actualDTO = chemicalCrudService.findByName(expectedName);
 
         assertEquals(expectedDTO, actualDTO);
 
         verify(chemicalRepository, times(1)).findByName(anyString());
-        verify(entityToDtoConverter, times(1)).convert(any());
+        verify(converter, times(1)).convert(any(ChemicalItem.class));
     }
 
     @Test
@@ -195,7 +191,7 @@ class ChemicalCrudServiceTest {
 
         assertThrows(ItemNotFoundException.class, () -> chemicalCrudService.findByName(expectedName));
         verify(chemicalRepository, times(1)).findByName(anyString());
-        verify(entityToDtoConverter, never()).convert(any());
+        verify(converter, never()).convert(any(ChemicalItem.class));
     }
 
     @Test
@@ -214,8 +210,8 @@ class ChemicalCrudServiceTest {
 
         when(chemicalRepository.findByName(anyString())).thenReturn(null);
         when(chemicalRepository.save(any(ChemicalItem.class))).thenReturn(mockItem);
-        when(entityToDtoConverter.convert(any(ChemicalItem.class))).thenReturn(expectedDTO);
-        when(dtoToEntityConverter.convert(any(ChemicalDTO.class))).thenReturn(mockItem);
+        when(converter.convert(any(ChemicalItem.class))).thenReturn(expectedDTO);
+        when(converter.convert(any(ChemicalDTO.class))).thenReturn(mockItem);
 
         ChemicalDTO result = chemicalCrudService.save(dto);
 
@@ -223,8 +219,8 @@ class ChemicalCrudServiceTest {
 
         verify(chemicalRepository, times(1)).findByName(anyString());
         verify(chemicalRepository, times(1)).save(any(ChemicalItem.class));
-        verify(entityToDtoConverter, times(1)).convert(any(ChemicalItem.class));
-        verify(dtoToEntityConverter, times(1)).convert(any(ChemicalDTO.class));
+        verify(converter, times(1)).convert(any(ChemicalItem.class));
+        verify(converter, times(1)).convert(any(ChemicalDTO.class));
     }
 
     @Test
@@ -252,6 +248,7 @@ class ChemicalCrudServiceTest {
     @Test
     @DisplayName("Изменение бытовой химии")
     void update_Success() {
+        // Arrange
         ChemicalDTO dtoToUpdate = new ChemicalDTO(
                 "Отбеливатель",
                 "ЧистоДом",
@@ -263,19 +260,24 @@ class ChemicalCrudServiceTest {
                 "Отбеливатель для стирки и уборки",
                 LocalDate.of(2027, 2, 15));
 
-        mockItem.setAmount(mockItem.getAmount() + 3.0);
-        expectedDTO.setAmount(expectedDTO.getAmount() + 3.0);
+        ChemicalItem updatedEntity = new ChemicalItem();
+        updatedEntity.setAmount(mockItem.getAmount() + 3.0);
 
-        when(chemicalRepository.findByName(anyString())).thenReturn(mockItem);
-        when(chemicalRepository.save(any(ChemicalItem.class))).thenReturn(mockItem);
-        when(entityToDtoConverter.convert(any(ChemicalItem.class))).thenReturn(expectedDTO);
+        when(converter.convert(any(ChemicalDTO.class))).thenReturn(updatedEntity);
+        when(converter.convert(any(ChemicalItem.class))).thenReturn(expectedDTO);
+
+        when(chemicalRepository.findById(anyInt())).thenReturn(Optional.of(mockItem));
+        when(chemicalRepository.save(any(ChemicalItem.class))).thenReturn(updatedEntity);
 
         ChemicalDTO result = chemicalCrudService.update(dtoToUpdate);
 
+
         assertEquals(expectedDTO, result);
-        verify(chemicalRepository, times(1)).findByName(anyString());
-        verify(chemicalRepository, times(1)).save(any(ChemicalItem.class));
-        verify(entityToDtoConverter, times(1)).convert(any(ChemicalItem.class));
+
+        verify(chemicalRepository).findById(anyInt());
+        verify(chemicalRepository).save(any(ChemicalItem.class));
+        verify(converter, times(1)).convert(any(ChemicalDTO.class));
+        verify(converter, times(1)).convert(any(ChemicalItem.class));
     }
 
     @Test
@@ -292,11 +294,11 @@ class ChemicalCrudServiceTest {
                 "Отбеливатель для стирки и уборки",
                 LocalDate.of(2027, 2, 15));
 
-        when(chemicalRepository.findByName(anyString())).thenReturn(null);
+        when(chemicalRepository.findById(anyInt())).thenReturn(Optional.empty());
 
         assertThrows(ItemNotFoundException.class, () -> chemicalCrudService.update(dtoToUpdate));
 
-        verify(chemicalRepository, times(1)).findByName(anyString());
+        verify(chemicalRepository, times(1)).findById(anyInt());
         verify(chemicalRepository, never()).save(any(ChemicalItem.class));
     }
 

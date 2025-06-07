@@ -31,8 +31,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
-@WebMvcTest(ChemicalController.class)
-@ContextConfiguration(classes = {ChemicalController.class, GlobalExceptionHandler.class})
+@WebMvcTest(ChemicalCrudController.class)
+@ContextConfiguration(classes = {ChemicalCrudController.class, GlobalExceptionHandler.class})
 class ChemicalControllerTest {
 
     @Autowired

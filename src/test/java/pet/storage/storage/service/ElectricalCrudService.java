@@ -15,8 +15,7 @@ import pet.storage.storage.model.ElectricalItem;
 import pet.storage.storage.model.enum_classes.Category;
 import pet.storage.storage.model.enum_classes.Metric;
 import pet.storage.storage.repository.ElectricalRepository;
-import pet.storage.storage.utility.converter.ElectricalDtoToEntityConverter;
-import pet.storage.storage.utility.converter.ElectricalEntityToDtoConverter;
+import pet.storage.storage.utility.converter.ElectricalConverter;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -35,10 +34,7 @@ class ElectricalCrudServiceTest {
     private ElectricalRepository electricalRepository;
 
     @Mock
-    private ElectricalEntityToDtoConverter entityToDtoConverter;
-
-    @Mock
-    private ElectricalDtoToEntityConverter dtoToEntityConverter;
+    private ElectricalConverter converter;
 
     @InjectMocks
     private ElectricalCrudService electricalCrudService;
@@ -57,7 +53,8 @@ class ElectricalCrudServiceTest {
                 2100.0,
                 LocalDate.of(2025, 2, 15),
                 "Чайник с защитой от перегрева",
-                LocalDate.of(2027, 2, 15)
+                LocalDate.of(2029, 2, 15),
+                48
         );
 
         expectedDTO = new ElectricalDTO(
@@ -69,6 +66,7 @@ class ElectricalCrudServiceTest {
                 2100.0,
                 LocalDate.of(2025, 2, 15),
                 "Чайник с защитой от перегрева",
+                LocalDate.of(2029, 2, 15),
                 48
         );
     }
@@ -85,14 +83,14 @@ class ElectricalCrudServiceTest {
         int idToFind = 1;
 
         when(electricalRepository.findById(anyInt())).thenReturn(Optional.of(mockItem));
-        when(entityToDtoConverter.convert(any(ElectricalItem.class))).thenReturn(expectedDTO);
+        when(converter.convert(any(ElectricalItem.class))).thenReturn(expectedDTO);
 
         ElectricalDTO actualDTO = electricalCrudService.findById(idToFind);
 
         assertEquals(expectedDTO, actualDTO);
 
         verify(electricalRepository, times(1)).findById(idToFind);
-        verify(entityToDtoConverter, times(1)).convert(any(ElectricalItem.class));
+        verify(converter, times(1)).convert(any(ElectricalItem.class));
     }
 
     @Test
@@ -105,7 +103,7 @@ class ElectricalCrudServiceTest {
         assertThrows(ItemNotFoundException.class, () -> electricalCrudService.findById(idToFind));
 
         verify(electricalRepository, times(1)).findById(idToFind);
-        verify(entityToDtoConverter, never()).convert(any(ElectricalItem.class));
+        verify(converter, never()).convert(any(ElectricalItem.class));
     }
 
     @Test
@@ -120,7 +118,8 @@ class ElectricalCrudServiceTest {
                 8700.0,
                 LocalDate.of(2024, 10, 10),
                 "Мощный пылесос для дома",
-                LocalDate.of(2026, 10, 10)
+                LocalDate.of(2026, 10, 10),
+                48
         );
 
         ElectricalDTO expectedDTO1 = new ElectricalDTO(
@@ -144,7 +143,8 @@ class ElectricalCrudServiceTest {
                 3200.0,
                 LocalDate.of(2025, 5, 5),
                 "Лампа с регулировкой яркости",
-                LocalDate.of(2027, 5, 5)
+                LocalDate.of(2027, 5, 5),
+                48
         );
 
         ElectricalDTO expectedDTO2 = new ElectricalDTO(
@@ -163,15 +163,15 @@ class ElectricalCrudServiceTest {
         List<ElectricalItem> electricalItems = Arrays.asList(mockItem, mockItem1, mockItem2);
 
         when(electricalRepository.findAll()).thenReturn(electricalItems);
-        when(entityToDtoConverter.convert(mockItem)).thenReturn(expectedDTO);
-        when(entityToDtoConverter.convert(mockItem1)).thenReturn(expectedDTO1);
-        when(entityToDtoConverter.convert(mockItem2)).thenReturn(expectedDTO2);
+        when(converter.convert(mockItem)).thenReturn(expectedDTO);
+        when(converter.convert(mockItem1)).thenReturn(expectedDTO1);
+        when(converter.convert(mockItem2)).thenReturn(expectedDTO2);
 
         List<ElectricalDTO> actualDTOList = electricalCrudService.findAll();
 
         assertEquals(expectedDTOList, actualDTOList);
         verify(electricalRepository, times(1)).findAll();
-        verify(entityToDtoConverter, times(3)).convert(any(ElectricalItem.class));
+        verify(converter, times(3)).convert(any(ElectricalItem.class));
     }
 
     @Test
@@ -180,14 +180,14 @@ class ElectricalCrudServiceTest {
         String nameToFind = "Электрочайник";
 
         when(electricalRepository.findByName(anyString())).thenReturn(mockItem);
-        when(entityToDtoConverter.convert(any(ElectricalItem.class))).thenReturn(expectedDTO);
+        when(converter.convert(any(ElectricalItem.class))).thenReturn(expectedDTO);
 
         ElectricalDTO actualDTO = electricalCrudService.findByName(nameToFind);
 
         assertEquals(expectedDTO, actualDTO);
 
         verify(electricalRepository, times(1)).findByName(nameToFind);
-        verify(entityToDtoConverter, times(1)).convert(any(ElectricalItem.class));
+        verify(converter, times(1)).convert(any(ElectricalItem.class));
 
     }
 
@@ -201,7 +201,7 @@ class ElectricalCrudServiceTest {
         assertThrows(ItemNotFoundException.class, () -> electricalCrudService.findByName(nameToFind));
 
         verify(electricalRepository, times(1)).findByName(nameToFind);
-        verify(entityToDtoConverter, never()).convert(any(ElectricalItem.class));
+        verify(converter, never()).convert(any(ElectricalItem.class));
     }
 
     @Test
@@ -221,16 +221,17 @@ class ElectricalCrudServiceTest {
 
         when(electricalRepository.findByName(anyString())).thenReturn(null);
         when(electricalRepository.save(any(ElectricalItem.class))).thenReturn(mockItem);
-        when(entityToDtoConverter.convert(any(ElectricalItem.class))).thenReturn(expectedDTO);
-        when(dtoToEntityConverter.convert(any(ElectricalDTO.class))).thenReturn(mockItem);
+        when(converter.convert(any(ElectricalItem.class))).thenReturn(expectedDTO);
+        when(converter.convert(any(ElectricalDTO.class))).thenReturn(mockItem);
 
         ElectricalDTO dto = electricalCrudService.save(dtoToTest);
 
         assertEquals(expectedDTO, dto);
+        assertEquals(dto.getWarrantyEndDate(), dto.getDateOfPurchase().plusMonths(dtoToTest.getWarrantyMonths()));
 
         verify(electricalRepository, times(1)).save(any(ElectricalItem.class));
-        verify(entityToDtoConverter, times(1)).convert(any(ElectricalItem.class));
-        verify(dtoToEntityConverter, times(1)).convert(any(ElectricalDTO.class));
+        verify(converter, times(1)).convert(any(ElectricalItem.class));
+        verify(converter, times(1)).convert(any(ElectricalDTO.class));
     }
 
     @Test
@@ -254,7 +255,7 @@ class ElectricalCrudServiceTest {
 
         verify(electricalRepository, times(1)).findByName(anyString());
         verify(electricalRepository, never()).save(any(ElectricalItem.class));
-        verify(dtoToEntityConverter, never()).convert(any(ElectricalDTO.class));
+        verify(converter, never()).convert(any(ElectricalDTO.class));
     }
 
     @Test
@@ -271,33 +272,36 @@ class ElectricalCrudServiceTest {
                 "Чайник с защитой от перегрева",
                 48
         );
+        dtoToTest.setId(1);
 
         mockItem.setAmount(mockItem.getAmount() + 3);
         expectedDTO.setAmount(expectedDTO.getAmount() + 3);
 
-        when(electricalRepository.findByName(anyString())).thenReturn(mockItem);
+        when(electricalRepository.findById(anyInt())).thenReturn(Optional.of(mockItem));
         when(electricalRepository.save(any(ElectricalItem.class))).thenReturn(mockItem);
-        when(entityToDtoConverter.convert(any(ElectricalItem.class))).thenReturn(expectedDTO);
+        when(converter.convert(any(ElectricalItem.class))).thenReturn(expectedDTO);
+        when(converter.convert(any(ElectricalDTO.class))).thenReturn(mockItem);
 
         ElectricalDTO actualDTO = electricalCrudService.update(dtoToTest);
 
         assertEquals(expectedDTO, actualDTO);
 
-        verify(electricalRepository, times(1)).findByName(anyString());
+        verify(electricalRepository, times(1)).findById(anyInt());
         verify(electricalRepository, times(1)).save(any(ElectricalItem.class));
-        verify(entityToDtoConverter, times(1)).convert(any(ElectricalItem.class));
+        verify(converter, times(1)).convert(any(ElectricalItem.class));
+        verify(converter, times(1)).convert(any(ElectricalDTO.class));
     }
 
     @Test
     @DisplayName("Изменение несуществующего электротовара выбрасывает исключение")
     void update_NotFound() {
-        when(electricalRepository.findByName(anyString())).thenReturn(null);
+        when(electricalRepository.findById(anyInt())).thenReturn(Optional.empty());
 
         assertThrows(ItemNotFoundException.class, () -> electricalCrudService.update(expectedDTO));
 
-        verify(electricalRepository, times(1)).findByName(anyString());
+        verify(electricalRepository, times(1)).findById(anyInt());
         verify(electricalRepository, never()).save(any(ElectricalItem.class));
-        verify(entityToDtoConverter, never()).convert(any(ElectricalItem.class));
+        verify(converter, never()).convert(any(ElectricalItem.class));
     }
 
     @Test

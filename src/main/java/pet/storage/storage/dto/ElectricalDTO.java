@@ -18,6 +18,7 @@ public class ElectricalDTO extends ItemDTO {
 
     @FutureOrPresent(message = "{validation.guaranty.futureOrPresent}")
     private LocalDate warrantyEndDate;
+
     @Positive
     private int warrantyMonths;
 
@@ -26,6 +27,13 @@ public class ElectricalDTO extends ItemDTO {
                          int warrantyMonths) {
         super(name, fabricator, category, metric, amount, price, dateOfPurchase, description);
         this.warrantyMonths = warrantyMonths;
-        this.warrantyEndDate = dateOfPurchase.plusMonths(warrantyMonths);
+    }
+
+    public ElectricalDTO(String name, String fabricator, Category category, Metric metric, double amount,
+                         double price, LocalDate dateOfPurchase, String description, LocalDate warrantyEndDate,
+                         int warrantyMonths) {
+        super(name, fabricator, category, metric, amount, price, dateOfPurchase, description);
+        this.warrantyMonths = warrantyMonths;
+        this.warrantyEndDate = warrantyEndDate;
     }
 }

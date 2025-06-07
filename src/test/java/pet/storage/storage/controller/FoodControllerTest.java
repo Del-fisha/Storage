@@ -30,8 +30,8 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(FoodController.class)
-@ContextConfiguration(classes = {FoodController.class, GlobalExceptionHandler.class})
+@WebMvcTest(FoodCrudController.class)
+@ContextConfiguration(classes = {FoodCrudController.class, GlobalExceptionHandler.class})
 class FoodControllerTest {
 
     @Autowired

@@ -5,6 +5,5 @@ import org.springframework.stereotype.Repository;
 import pet.storage.storage.model.ChemicalItem;
 
 @Repository
-public interface ChemicalRepository extends JpaRepository<ChemicalItem, Integer> {
-    ChemicalItem findByName(String name);
+public interface ChemicalRepository extends BaseRepository <ChemicalItem> {
 }

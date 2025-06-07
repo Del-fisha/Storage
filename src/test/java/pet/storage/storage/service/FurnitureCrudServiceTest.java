@@ -15,8 +15,7 @@ import pet.storage.storage.model.FurnitureItem;
 import pet.storage.storage.model.enum_classes.Category;
 import pet.storage.storage.model.enum_classes.Metric;
 import pet.storage.storage.repository.FurnitureRepository;
-import pet.storage.storage.utility.converter.FurnitureDtoToEntityConverter;
-import pet.storage.storage.utility.converter.FurnitureEntityToDtoConverter;
+import pet.storage.storage.utility.converter.FurnitureConverter;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -34,10 +33,7 @@ class FurnitureCrudServiceTest {
     private FurnitureRepository furnitureRepository;
 
     @Mock
-    private FurnitureEntityToDtoConverter entityToDtoConverter;
-
-    @Mock
-    private FurnitureDtoToEntityConverter dtoToEntityConverter;
+    private FurnitureConverter converter;
 
     @InjectMocks
     private FurnitureCrudService furnitureCrudService;
@@ -74,7 +70,7 @@ class FurnitureCrudServiceTest {
         String expectedName = "Диван";
 
         when(furnitureRepository.findById(anyInt())).thenReturn(Optional.of(mockItem));
-        when(entityToDtoConverter.convert(any(FurnitureItem.class))).thenReturn(expectedDTO);
+        when(converter.convert(any(FurnitureItem.class))).thenReturn(expectedDTO);
 
         FurnitureDTO result = furnitureCrudService.findById(expectedId);
 
@@ -82,7 +78,7 @@ class FurnitureCrudServiceTest {
         assertEquals(expectedName, result.getName());
 
         verify(furnitureRepository, times(1)).findById(anyInt());
-        verify(entityToDtoConverter, times(1)).convert(any(FurnitureItem.class));
+        verify(converter, times(1)).convert(any(FurnitureItem.class));
     }
 
     @Test
@@ -152,9 +148,9 @@ class FurnitureCrudServiceTest {
         List<FurnitureItem> mockItems = Arrays.asList(mockItem, mockItem1, mockItem2);
 
         when(furnitureRepository.findAll()).thenReturn(mockItems);
-        when(entityToDtoConverter.convert(mockItem)).thenReturn(expectedDTO);
-        when(entityToDtoConverter.convert(mockItem1)).thenReturn(expectedDTO1);
-        when(entityToDtoConverter.convert(mockItem2)).thenReturn(expectedDTO2);
+        when(converter.convert(mockItem)).thenReturn(expectedDTO);
+        when(converter.convert(mockItem1)).thenReturn(expectedDTO1);
+        when(converter.convert(mockItem2)).thenReturn(expectedDTO2);
 
         List<FurnitureDTO> result = furnitureCrudService.findAll();
 
@@ -163,7 +159,7 @@ class FurnitureCrudServiceTest {
         assertEquals(result, expectedDTOs);
 
         verify(furnitureRepository, times(1)).findAll();
-        verify(entityToDtoConverter, times(3)).convert(any(FurnitureItem.class));
+        verify(converter, times(3)).convert(any(FurnitureItem.class));
     }
 
     @Test
@@ -172,7 +168,7 @@ class FurnitureCrudServiceTest {
         String expectedName = "Диван";
 
         when(furnitureRepository.findByName(anyString())).thenReturn(mockItem);
-        when(entityToDtoConverter.convert(any(FurnitureItem.class))).thenReturn(expectedDTO);
+        when(converter.convert(any(FurnitureItem.class))).thenReturn(expectedDTO);
 
         FurnitureDTO result = furnitureCrudService.findByName(expectedName);
 
@@ -180,7 +176,7 @@ class FurnitureCrudServiceTest {
         assertEquals(expectedName, result.getName());
 
         verify(furnitureRepository, times(1)).findByName(anyString());
-        verify(entityToDtoConverter, times(1)).convert(any(FurnitureItem.class));
+        verify(converter, times(1)).convert(any(FurnitureItem.class));
     }
 
     @Test
@@ -209,8 +205,8 @@ class FurnitureCrudServiceTest {
 
         when(furnitureRepository.save(any(FurnitureItem.class))).thenReturn(mockItem);
         when(furnitureRepository.findByName(anyString())).thenReturn(null);
-        when(entityToDtoConverter.convert(any(FurnitureItem.class))).thenReturn(expectedDTO);
-        when(dtoToEntityConverter.convert(any(FurnitureDTO.class))).thenReturn(mockItem);
+        when(converter.convert(any(FurnitureItem.class))).thenReturn(expectedDTO);
+        when(converter.convert(any(FurnitureDTO.class))).thenReturn(mockItem);
 
         FurnitureDTO furnitureDTO = furnitureCrudService.save(expectedDTO);
 
@@ -219,8 +215,8 @@ class FurnitureCrudServiceTest {
 
         verify(furnitureRepository, times(1)).save(any(FurnitureItem.class));
         verify(furnitureRepository, times(1)).findByName(anyString());
-        verify(entityToDtoConverter, times(1)).convert(any(FurnitureItem.class));
-        verify(dtoToEntityConverter, times(1)).convert(any(FurnitureDTO.class));
+        verify(converter, times(1)).convert(any(FurnitureItem.class));
+        verify(converter, times(1)).convert(any(FurnitureDTO.class));
     }
 
     @Test
@@ -252,26 +248,28 @@ class FurnitureCrudServiceTest {
         mockItem.setAmount(mockItem.getAmount() + 3);
 
         when(furnitureRepository.save(any(FurnitureItem.class))).thenReturn(mockItem);
-        when(entityToDtoConverter.convert(any(FurnitureItem.class))).thenReturn(dtoToTest);
-        when(furnitureRepository.findByName(anyString())).thenReturn(mockItem);
+        when(converter.convert(any(FurnitureItem.class))).thenReturn(dtoToTest);
+        when(furnitureRepository.findById(anyInt())).thenReturn(Optional.of(mockItem));
+        when(converter.convert(any(FurnitureDTO.class))).thenReturn(mockItem);
 
         FurnitureDTO result = furnitureCrudService.update(dtoToTest);
 
         assertEquals(dtoToTest.getName(), result.getName());
+
         verify(furnitureRepository, times(1)).save(any(FurnitureItem.class));
-        verify(furnitureRepository, times(1)).findByName(anyString());
-        verify(entityToDtoConverter, times(1)).convert(any(FurnitureItem.class));
-        verify(furnitureRepository, times(1)).findByName(anyString());
+        verify(furnitureRepository, times(1)).findById(anyInt());
+        verify(converter, times(1)).convert(any(FurnitureItem.class));
+        verify(converter, times(1)).convert(any(FurnitureDTO.class));
     }
 
     @Test
     @DisplayName("Изменение несуществующей позиции мебели выбрасывает исключение")
     public void update_NotFound() {
-        when(furnitureRepository.findByName(anyString())).thenReturn(null);
+        when(furnitureRepository.findById(anyInt())).thenReturn(Optional.empty());
 
         assertThrows(ItemNotFoundException.class, () -> furnitureCrudService.update(expectedDTO));
 
-        verify(furnitureRepository, times(1)).findByName(anyString());
+        verify(furnitureRepository, times(1)).findById(anyInt());
         verify(furnitureRepository, never()).save(any(FurnitureItem.class));
     }
 

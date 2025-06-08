@@ -45,7 +45,9 @@ public abstract class BaseConverter<T extends ItemDTO, E extends Item>
     }
 
     protected void mapCommonFieldsFromDto(T dto, E entity) {
-        entity.setId(dto.getId());
+        if (dto.getId() != 0) {
+            entity.setId(dto.getId());
+        }
         entity.setName(dto.getName());
         entity.setFabricator(dto.getFabricator());
         entity.setCategory(dto.getCategory());

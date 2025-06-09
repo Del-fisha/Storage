@@ -1,5 +1,6 @@
 package pet.storage.storage.utility.converter;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import pet.storage.storage.dto.ChemicalDTO;
 import pet.storage.storage.model.ChemicalItem;
@@ -15,6 +16,7 @@ public class ChemicalConverterTest {
     private final ChemicalConverter converter = new ChemicalConverter();
 
     @Test
+    @DisplayName("Тест химии без id - конвертация entity -> dto")
     void testEntityToDtoConversion() {
         ChemicalItem item = new ChemicalItem(
                 "Отбеливатель",

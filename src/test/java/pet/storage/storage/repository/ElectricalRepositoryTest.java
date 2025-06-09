@@ -10,16 +10,15 @@ import org.springframework.test.context.ActiveProfiles;
 import pet.storage.storage.model.ElectricalItem;
 import pet.storage.storage.model.enum_classes.Category;
 import pet.storage.storage.model.enum_classes.Metric;
-import pet.storage.storage.repository.ElectricalRepository;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat; // Используем AssertJ для более читаемых ассертов
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest // 1. Это ключевая аннотация для тестирования JPA репозиториев
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY) // 2. Настраивает тестовую БД (по умолчанию H2)
-@ActiveProfiles("dev") // 3. Активируем тестовый профиль (если есть application-test.properties)
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
+// 2. Настраивает тестовую БД (по умолчанию H2)
+@ActiveProfiles("test") // 3. Активируем тестовый профиль (если есть application-test.properties)
 class ElectricalRepositoryTest {
 
     @Autowired // 4. Инжектируем наш репозиторий, который хотим тестировать

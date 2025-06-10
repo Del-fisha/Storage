@@ -44,6 +44,8 @@ class ElectricalRepositoryTest {
                 48
         );
 
+        assertThat(item.getId()).isEqualTo(0);
+
         ElectricalItem savedItem = electricalRepository.save(item);
 
         assertThat(savedItem).isNotNull();
@@ -54,6 +56,7 @@ class ElectricalRepositoryTest {
         assertThat(foundItem).isEqualTo(savedItem);
         assertThat(foundItem.getName()).isEqualTo("Электрочайник");
         assertThat(foundItem.getFabricator()).isEqualTo("Bosch");
+        // ToDo Проверки всех полей
     }
 
     @Test
@@ -83,16 +86,17 @@ class ElectricalRepositoryTest {
         assertThat(foundByNameItem).isNotNull();
         assertThat(foundByNameItem.getName()).isEqualTo("Электрочайник");
         assertThat(foundByNameItem.getFabricator()).isEqualTo("Bosch");
+        // ToDo Проверки всех полей
     }
 
     @Test
-    @DisplayName("Проверка, что findByName возвращает Optional.empty() для несуществующего имени")
+    @DisplayName("Проверка, что findByName возвращает null для несуществующего имени")
     void shouldReturnEmptyOptionalWhenItemNotFoundByName() {
         // Действие
         ElectricalItem foundByNameItem = electricalRepository.findByName("NonExistent Item");
 
         // Проверка
-        assertThat(foundByNameItem).isNull(); // Убеждаемся, что Optional пустой
+        assertThat(foundByNameItem).isNull();
     }
 
     @Test

@@ -34,7 +34,6 @@ public class FoodRepositoryTest {
     @DisplayName("Проверка сохранения FoodItem в базу данных")
     void shouldSaveElectricalItem() {
 
-        String expectedName = "Хлеб";
         int expectedId = 1;
         int nullId = 0;
 
@@ -56,9 +55,10 @@ public class FoodRepositoryTest {
         FoodItem savedItem = repository.save(item);
 
         assertThat(savedItem).isNotNull();
-        assertThat(savedItem.getId()).isPositive();
+
         try {
             assertThat(savedItem.getId()).isNotNull();
+            assertThat(savedItem.getId()).isEqualTo(expectedId);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

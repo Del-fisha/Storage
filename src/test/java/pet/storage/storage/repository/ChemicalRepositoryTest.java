@@ -10,7 +10,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.annotation.DirtiesContext;
-import pet.storage.storage.model.ElectricalItem;
+import pet.storage.storage.model.ChemicalItem;
 import pet.storage.storage.model.enum_classes.Category;
 import pet.storage.storage.model.enum_classes.Metric;
 import pet.storage.storage.utility.test.TestUtilities;
@@ -24,10 +24,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 @ActiveProfiles("test")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class ElectricalRepositoryTest {
+public class ChemicalRepositoryTest {
 
     @Autowired
-    ElectricalRepository repository;
+    ChemicalRepository repository;
 
     @Autowired
     TestEntityManager entityManager;
@@ -43,48 +43,48 @@ public class ElectricalRepositoryTest {
     }
 
     @Test
-    @DisplayName("Сохранение ElectricalItem в БД")
+    @DisplayName("Сохранение ChemicalItem в БД")
     void shouldSaveItem() {
-        ElectricalItem item = new ElectricalItem(
-                "Холодильник", "Bosch", Category.Electrical, Metric.Piece, 1, 64990.0,
-                LocalDate.of(2023, 1, 15), "Встраиваемый холодильник",
-                LocalDate.of(2029, 1, 15), 72
+        ChemicalItem item = new ChemicalItem(
+                "Domestos", "Unilever", Category.Chemicals, Metric.L, 1.0, 150.0,
+                LocalDate.of(2025, 6, 1), "Дезинфицирующее средство",
+                LocalDate.of(2029, 5, 1)
         );
 
-        ElectricalItem savedItem = repository.save(item);
-        ElectricalItem foundItem = entityManager.find(ElectricalItem.class, savedItem.getId());
+        ChemicalItem savedItem = repository.save(item);
+        ChemicalItem foundItem = entityManager.find(ChemicalItem.class, savedItem.getId());
 
         assertThat(foundItem).isEqualTo(savedItem);
         assertThat(utilities.baseFieldsComparison(foundItem, savedItem)).isTrue();
     }
 
     @Test
-    @DisplayName("Поиск ElectricalItem по имени")
+    @DisplayName("Поиск ChemicalItem по имени")
     void shouldFindItemByName() {
-        ElectricalItem item = new ElectricalItem(
-                "Холодильник", "Bosch", Category.Electrical, Metric.Piece, 1, 64990.0,
-                LocalDate.of(2023, 1, 15), "Встраиваемый холодильник",
-                LocalDate.of(2029, 1, 15), 72
+        ChemicalItem item = new ChemicalItem(
+                "Domestos", "Unilever", Category.Chemicals, Metric.L, 1.0, 150.0,
+                LocalDate.of(2025, 6, 1), "Дезинфицирующее средство",
+                LocalDate.of(2029, 5, 1)
         );
 
         entityManager.persist(item);
-        ElectricalItem foundItem = repository.findByName("Холодильник");
+        ChemicalItem foundItem = repository.findByName("Domestos");
 
         assertThat(foundItem).isEqualTo(item);
         assertThat(utilities.baseFieldsComparison(item, foundItem)).isTrue();
     }
 
     @Test
-    @DisplayName("Поиск ElectricalItem по ID")
+    @DisplayName("Поиск ChemicalItem по ID")
     void shouldFindItemById() {
-        ElectricalItem item = new ElectricalItem(
-                "Пылесос", "Dyson", Category.Electrical, Metric.Piece, 1, 59990.0,
-                LocalDate.of(2024, 5, 20), "Беспроводной пылесос",
-                LocalDate.of(2027, 5, 20), 36
+        ChemicalItem item = new ChemicalItem(
+                "Colgate", "Colgate-Palmolive", Category.Chemicals, Metric.Piece, 1.0, 120.0,
+                LocalDate.of(2024, 6, 15), "Зубная паста",
+                LocalDate.of(2025, 6, 15)
         );
 
         entityManager.persist(item);
-        ElectricalItem foundItem = repository.findById(item.getId()).orElse(null);
+        ChemicalItem foundItem = repository.findById(item.getId()).orElse(null);
 
         assertThat(foundItem).isEqualTo(item);
         Assertions.assertNotNull(foundItem);
@@ -94,28 +94,28 @@ public class ElectricalRepositoryTest {
     @Test
     @DisplayName("Поиск по несуществующему имени возвращает null")
     void shouldReturnNullWhenItemNotFoundByName() {
-        ElectricalItem foundItem = repository.findByName("NonExistent");
+        ChemicalItem foundItem = repository.findByName("NonExistent");
         assertThat(foundItem).isNull();
     }
 
     @Test
     @DisplayName("Поиск по несуществующему ID возвращает null")
     void shouldReturnNullWhenItemNotFoundById() {
-        ElectricalItem foundItem = repository.findById(9999).orElse(null);
+        ChemicalItem foundItem = repository.findById(9999).orElse(null);
         assertThat(foundItem).isNull();
     }
 
     @Test
     @DisplayName("Удаление по ID")
     void shouldDeleteItemById() {
-        ElectricalItem item = new ElectricalItem(
-                "Микроволновка", "Samsung", Category.Electrical, Metric.Piece, 1, 8990.0,
-                LocalDate.of(2024, 3, 10), "С грилем",
-                LocalDate.of(2026, 3, 10), 24
+        ChemicalItem item = new ChemicalItem(
+                "Vanish", "Reckitt Benckiser", Category.Chemicals, Metric.Kg, 0.75, 200.0,
+                LocalDate.of(2024, 3, 10), "Пятновыводитель",
+                LocalDate.of(2025, 3, 10)
         );
 
         entityManager.persist(item);
-        List<ElectricalItem> items = repository.findAll();
+        List<ChemicalItem> items = repository.findAll();
         assertThat(items.size()).isEqualTo(1);
 
         repository.deleteById(items.get(0).getId());
@@ -126,17 +126,17 @@ public class ElectricalRepositoryTest {
     @Test
     @DisplayName("Получение всех элементов")
     void shouldGetAllItems() {
-        ElectricalItem item1 = new ElectricalItem("Холодильник", "Bosch", Category.Electrical,
-                Metric.Piece, 1, 64990.0,
-                LocalDate.of(2023, 1, 15), "Встраиваемый холодильник",
-                LocalDate.of(2029, 1, 15), 72);
+        ChemicalItem item1 = new ChemicalItem("Domestos", "Unilever", Category.Chemicals,
+                Metric.L, 1.0, 150.0,
+                LocalDate.of(2025, 6, 1), "Дезинфицирующее средство",
+                LocalDate.of(2029, 5, 1));
 
-        ElectricalItem item2 = new ElectricalItem("Пылесос", "Dyson", Category.Electrical,
-                Metric.Piece, 1, 59990.0,
-                LocalDate.of(2024, 5, 20), "Беспроводной пылесос",
-                LocalDate.of(2027, 5, 20), 36);
+        ChemicalItem item2 = new ChemicalItem("Colgate", "Colgate-Palmolive", Category.Chemicals,
+                Metric.Piece, 1.0, 120.0,
+                LocalDate.of(2024, 6, 15), "Зубная паста",
+                LocalDate.of(2025, 6, 15));
 
-        List<ElectricalItem> items = repository.findAll();
+        List<ChemicalItem> items = repository.findAll();
         assertThat(items.size()).isEqualTo(0);
 
         entityManager.persist(item1);
@@ -149,27 +149,27 @@ public class ElectricalRepositoryTest {
     @Test
     @DisplayName("Получение пустого списка")
     void shouldGetEmptyListItems() {
-        List<ElectricalItem> items = repository.findAll();
+        List<ChemicalItem> items = repository.findAll();
         assertThat(items.size()).isEqualTo(0);
     }
 
     @Test
     @DisplayName("Обновление элемента")
     void shouldUpdateItem() {
-        ElectricalItem item = new ElectricalItem(
-                "Холодильник", "Bosch", Category.Electrical, Metric.Piece, 1, 64990.0,
-                LocalDate.of(2023, 1, 15), "Встраиваемый холодильник",
-                LocalDate.of(2029, 1, 15), 72
+        ChemicalItem item = new ChemicalItem(
+                "Domestos", "Unilever", Category.Chemicals, Metric.L, 1.0, 150.0,
+                LocalDate.of(2025, 6, 1), "Дезинфицирующее средство",
+                LocalDate.of(2029, 5, 1)
         );
 
         entityManager.persist(item);
-        ElectricalItem foundItem = repository.findById(item.getId()).orElse(null);
+        ChemicalItem foundItem = repository.findById(item.getId()).orElse(null);
         Assertions.assertNotNull(foundItem);
 
-        foundItem.setWarrantyMonths(84);
-        ElectricalItem updatedItem = repository.save(foundItem);
+        foundItem.setAmount(3.0);
+        ChemicalItem updatedItem = repository.save(foundItem);
 
-        assertThat(updatedItem.getWarrantyMonths()).isEqualTo(84);
+        assertThat(updatedItem.getAmount()).isEqualTo(3.0);
         assertThat(utilities.baseFieldsComparison(updatedItem, foundItem)).isTrue();
     }
 }

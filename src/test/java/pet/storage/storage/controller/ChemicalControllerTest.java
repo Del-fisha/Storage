@@ -236,7 +236,7 @@ class ChemicalControllerTest {
                 120.0,
                 LocalDate.of(2024, 6, 15),
                 "Зубная паста",
-                LocalDate.of(2025, 6, 15));
+                LocalDate.of(2030, 6, 15));
 
         when(chemicalCrudService.update(any(ChemicalDTO.class))).thenThrow(new ItemNotFoundException());
 

@@ -1,5 +1,6 @@
 package pet.storage.storage.repository;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -8,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.annotation.DirtiesContext;
 import pet.storage.storage.model.FoodItem;
 import pet.storage.storage.model.enum_classes.Category;
 import pet.storage.storage.model.enum_classes.Metric;
@@ -21,9 +23,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.ANY)
 @ActiveProfiles("test")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD) // Добавленная аннотация
 public class FoodRepositoryTest {
 
-    private static int expectedId = 1;
+    private int expectedId = 1;
 
     @Autowired
     FoodRepository repository;
@@ -39,6 +42,7 @@ public class FoodRepositoryTest {
         repository.deleteAll();
         entityManager.flush();
         entityManager.clear();
+        expectedId = 1;
     }
 
     @Test
@@ -63,7 +67,6 @@ public class FoodRepositoryTest {
         assertThat(item.getId()).isEqualTo(nullId);
 
         FoodItem savedItem = repository.save(item);
-
 
         assertThat(savedItem).isNotNull();
 
@@ -101,7 +104,6 @@ public class FoodRepositoryTest {
 
         entityManager.persist(item);
         entityManager.flush();
-        expectedId++;
 
         FoodItem savedItem = repository.findByName(expectedName);
 
@@ -128,30 +130,24 @@ public class FoodRepositoryTest {
 
         entityManager.persist(item);
         entityManager.flush();
-        expectedId++;
-        System.out.println(expectedId);
-        FoodItem savedItem = repository.findById(expectedId).orElse(null); // ToDo разобраться с логикой expectedID
+        FoodItem savedItem = repository.findById(item.getId()).orElse(null);
 
         assertThat(savedItem).isEqualTo(item);
+        Assertions.assertNotNull(savedItem);
         assertThat(utilities.baseFieldsComparison(item, savedItem)).isTrue();
     }
 
     @Test
     @DisplayName("Проверка, что findByName возвращает null для несуществующего имени")
     void shouldReturnEmptyOptionalWhenItemNotFoundByName() {
-        // Действие
         FoodItem foundByNameItem = repository.findByName("NonExistent Item");
-
-        // Проверка
         assertThat(foundByNameItem).isNull();
     }
 
     @Test
     @DisplayName("Проверка, что findByName возвращает null для несуществующего ID")
     void shouldReturnEmptyOptionalWhenItemNotFoundById() {
-
         FoodItem foundByIdItem = repository.findById(9999).orElse(null);
-
         assertThat(foundByIdItem).isNull();
     }
 
@@ -174,18 +170,13 @@ public class FoodRepositoryTest {
 
         entityManager.persist(item);
         entityManager.flush();
-        expectedId++;
 
         List<FoodItem> listOfItems = repository.findAll();
-
         assertThat(listOfItems.size()).isEqualTo(1);
 
         repository.deleteById(listOfItems.get(0).getId());
-
         listOfItems = repository.findAll();
-
         assertThat(listOfItems.isEmpty()).isTrue();
-
     }
 
     @Test
@@ -232,33 +223,85 @@ public class FoodRepositoryTest {
         );
 
         List<FoodItem> items = repository.findAll();
-
         assertThat(items.size()).isEqualTo(0);
 
         entityManager.persist(item1);
         entityManager.persist(item2);
         entityManager.persist(item3);
         entityManager.flush();
-        expectedId += 3;
 
         items = repository.findAll();
         assertThat(items.size()).isEqualTo(3);
-
     }
 
     @Test
     @DisplayName("Проверка findAll с пустой базой")
     void shouldGetEmptyListItems() {
-
         List<FoodItem> items = repository.findAll();
-
         assertThat(items.size()).isEqualTo(0);
-
     }
 
     @Test
     @DisplayName("Проверка изменения Item")
     void shouldUpdateItem() {
+        String newFabricator = "Другой производитель";
 
+        FoodItem item3 = new FoodItem(
+                "Молоко",
+                "Молочный завод",
+                Category.Food,
+                Metric.L,
+                1,
+                80.0,
+                LocalDate.of(2025, 6, 2),
+                "Пастеризованное молоко",
+                LocalDate.of(2025, 5, 31),
+                LocalDate.of(2025, 6, 7)
+        );
+        FoodItem item = new FoodItem(
+                "Яблоки",
+                "Фермер Иванов",
+                Category.Food,
+                Metric.Kg,
+                2,
+                120.0,
+                LocalDate.of(2025, 5, 28),
+                "Сочные яблоки сорта Гала",
+                LocalDate.of(2025, 5, 25),
+                LocalDate.of(2025, 6, 10)
+        );
+        FoodItem item1 = new FoodItem(
+                "Хлеб",
+                "Пекарня №1",
+                Category.Food,
+                Metric.Piece,
+                1,
+                45.0,
+                LocalDate.of(2025, 6, 1),
+                "Свежий ржаной хлеб",
+                LocalDate.of(2025, 5, 30),
+                LocalDate.of(2025, 6, 5)
+        );
+
+        entityManager.persist(item3);
+        entityManager.persist(item);
+        entityManager.persist(item1);
+        entityManager.flush();
+
+        FoodItem itemToUpdate = repository.findById(2).orElse(null);
+        assertThat(itemToUpdate).isEqualTo(item);
+
+        Assertions.assertNotNull(itemToUpdate);
+        itemToUpdate.setFabricator(newFabricator);
+        repository.save(itemToUpdate);
+
+        entityManager.flush();
+
+        FoodItem updatedItem = repository.findById(itemToUpdate.getId()).orElse(null);
+        assertThat(updatedItem).isEqualTo(itemToUpdate);
+        Assertions.assertNotNull(updatedItem);
+        System.out.println(updatedItem.getId());
+        System.out.println(itemToUpdate.getId());
+        utilities.baseFieldsComparison(item, updatedItem);
     }
 }

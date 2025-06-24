@@ -22,6 +22,9 @@ public abstract class Item {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected int id;
 
+    @Column(name = "user_id")
+    private long userId;
+
     @Column(nullable = false, name = "name")
     protected String name;
 

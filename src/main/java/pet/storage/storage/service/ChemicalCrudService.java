@@ -14,8 +14,8 @@ public class ChemicalCrudService extends BaseCrudService <ChemicalDTO, ChemicalI
 
     @Autowired
     public ChemicalCrudService(ChemicalRepository repository,
-                               ChemicalConverter converter) {
-
-        super(repository, converter);
+                               ChemicalConverter converter,
+                               RemindKafkaService remindKafkaService) {
+        super(repository, converter, remindKafkaService);
     }
 }

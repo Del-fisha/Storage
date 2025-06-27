@@ -14,7 +14,8 @@ public class FoodCrudService extends BaseCrudService<FoodDTO, FoodItem, FoodRepo
 
     @Autowired
     public FoodCrudService(FoodRepository repository,
-                           FoodConverter converter) {
-        super(repository, converter);
+                           FoodConverter converter,
+                           RemindKafkaService remindKafkaService) {
+        super(repository, converter, remindKafkaService);
     }
 }

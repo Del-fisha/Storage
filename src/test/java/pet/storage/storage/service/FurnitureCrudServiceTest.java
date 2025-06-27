@@ -35,6 +35,9 @@ class FurnitureCrudServiceTest {
     @Mock
     private FurnitureConverter converter;
 
+    @Mock
+    RemindKafkaService remindKafkaService;
+
     @InjectMocks
     private FurnitureCrudService furnitureCrudService;
 

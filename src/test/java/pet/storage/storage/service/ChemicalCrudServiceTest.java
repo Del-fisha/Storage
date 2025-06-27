@@ -36,6 +36,9 @@ class ChemicalCrudServiceTest {
     @Mock
     private ChemicalConverter converter;
 
+    @Mock
+    RemindKafkaService remindKafkaService;
+
     @InjectMocks
     private ChemicalCrudService chemicalCrudService;
 

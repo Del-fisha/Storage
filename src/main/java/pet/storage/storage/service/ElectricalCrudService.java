@@ -14,19 +14,14 @@ public class ElectricalCrudService extends BaseCrudService<ElectricalDTO, Electr
 
     @Autowired
     public ElectricalCrudService(ElectricalRepository repository,
-                                 ElectricalConverter converter) {
-        super(repository, converter);
+                                 ElectricalConverter converter,
+                                 RemindKafkaService remindKafkaService) {
+        super(repository, converter, remindKafkaService);
     }
 
     @Override
     public ElectricalDTO save(ElectricalDTO dto) {
-        System.out.println("Dto date of purchase : " + dto.getDateOfPurchase());
-        System.out.println("Dto war months: " + dto.getWarrantyMonths());
-        System.out.println("End date : " + dto.getWarrantyEndDate());
-        System.out.println("Logic.....................");
         dto.setWarrantyEndDate(dto.getDateOfPurchase().plusMonths(dto.getWarrantyMonths()));
-        System.out.println("Now end date is : " + dto.getWarrantyEndDate());
-        System.out.println("saving");
         return super.save(dto);
     }
 }

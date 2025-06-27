@@ -36,6 +36,9 @@ class ElectricalCrudServiceTest {
     @Mock
     private ElectricalConverter converter;
 
+    @Mock
+    RemindKafkaService remindKafkaService;
+
     @InjectMocks
     private ElectricalCrudService electricalCrudService;
 

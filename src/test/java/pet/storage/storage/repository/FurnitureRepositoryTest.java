@@ -8,8 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import pet.storage.storage.domain.events.ProductEvent;
 import pet.storage.storage.model.FurnitureItem;
 import pet.storage.storage.model.enum_classes.Category;
 import pet.storage.storage.model.enum_classes.Metric;
@@ -34,6 +37,9 @@ public class FurnitureRepositoryTest {
 
     @Autowired
     TestUtilities utilities;
+
+    @MockitoBean
+    private KafkaTemplate<Long, ProductEvent> kafkaTemplate;
 
     @BeforeEach
     void tearDown() {

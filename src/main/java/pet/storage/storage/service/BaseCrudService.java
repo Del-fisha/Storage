@@ -1,12 +1,10 @@
 package pet.storage.storage.service;
 
 import jakarta.validation.Valid;
-import pet.storage.storage.domain.events.ProductEvent;
-import pet.storage.storage.domain.events.ProductEventType;
+import lombok.RequiredArgsConstructor;
 import pet.storage.storage.dto.abstract_classes.ItemDTO;
 import pet.storage.storage.exceptions.ItemAlreadyExistsException;
 import pet.storage.storage.exceptions.ItemNotFoundException;
-import pet.storage.storage.kafka.producer.ProductEventProducer;
 import pet.storage.storage.model.abstract_classes.Item;
 import pet.storage.storage.repository.BaseRepository;
 import pet.storage.storage.utility.converter.ConverterOfEntities;
@@ -21,16 +19,16 @@ public abstract class BaseCrudService
 
     protected final R repository;
     protected final ConverterOfEntities<T, E> converter;
-    protected final ProductEventProducer eventProducer;
+    protected final RemindKafkaService remindKafkaService;
 
-    protected BaseCrudService(
-            R repository,
-            ConverterOfEntities<T, E> converter, ProductEventProducer eventProducer) {
-
+    public BaseCrudService(final R repository, final ConverterOfEntities<T, E> converter, RemindKafkaService remindKafkaService) {
         this.repository = repository;
         this.converter = converter;
-        this.eventProducer = eventProducer;
+        this.remindKafkaService = remindKafkaService;
     }
+
+
+
 
     @Override
     public T findById(int id) {
@@ -62,30 +60,9 @@ public abstract class BaseCrudService
         }
 
         E entity = converter.convert(dto);
-        E savedEntity = repository.save(entity); // СОХРАНИМ РЕЗУЛЬТАТ SAVE В ПЕРЕМЕННУЮ
+        E savedEntity = repository.save(entity); // СОХРАНЯЕМ РЕЗУЛЬТАТ SAVE
 
-        // --- Отправка события ADD в Kafka ---
-        ProductEvent event = new ProductEvent();
-        event.setSourceItemId((long) savedEntity.getId()); // Преобразуем int в Long
-        event.setName(savedEntity.getName()); // Предполагается, что у E есть getName()
-        // Предполагается, что у E есть getExpirationDate()
-        // Если E (Item) не имеет getExpirationDate(), это будет проблемой.
-        // Нужно, чтобы твои Item (FoodItem, ChemicalItem и т.д.) его имели.
-        if (savedEntity instanceof ExpirableItem) { // Если у тебя есть интерфейс/абстрактный класс для сроков годности
-            event.setExpirationDate(((ExpirableItem) savedEntity).getExpirationDate());
-        } else {
-            // Если у тебя нет expirationDate для всех Item, реши, что делать:
-            // 1. Игнорировать для таких Item (expirationDate будет null в ProductEvent)
-            // 2. Выбрасывать ошибку, если Item должен быть Expirable
-            // 3. Установить дефолтное значение
-            // Для начала, можно оставить null.
-            event.setExpirationDate(null); // Или другую логику
-        }
-        event.setEventType(ProductEventType.ADD);
-        // userId уже по умолчанию 1L в ProductEvent, если ты его так настроил
-
-        eventProducer.sendProductEvent(event); // ОТПРАВКА!
-        // --- Конец отправки события ADD ---
+        remindKafkaService.sendItemToRemind(savedEntity);
 
         return converter.convert(savedEntity);
     }

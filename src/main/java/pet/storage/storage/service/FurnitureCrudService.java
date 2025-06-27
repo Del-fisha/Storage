@@ -14,7 +14,8 @@ public class FurnitureCrudService extends BaseCrudService<FurnitureDTO, Furnitur
 
     @Autowired
     public FurnitureCrudService(FurnitureRepository repository,
-                                FurnitureConverter converter) {
-        super(repository, converter);
+                                FurnitureConverter converter,
+                                RemindKafkaService remindKafkaService) {
+        super(repository, converter, remindKafkaService);
     }
 }

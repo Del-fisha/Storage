@@ -40,6 +40,9 @@ class FoodCrudServiceTest {
     @InjectMocks
     private FoodCrudService foodCrudService;
 
+    @Mock
+    RemindKafkaService remindKafkaService;
+
     private FoodItem mockItem;
     private FoodDTO expectedDTO;
 

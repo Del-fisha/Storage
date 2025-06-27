@@ -4,15 +4,23 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import pet.storage.storage.domain.events.ProductEvent;
 import pet.storage.storage.model.ChemicalItem;
 import pet.storage.storage.model.enum_classes.Category;
 import pet.storage.storage.model.enum_classes.Metric;
+import pet.storage.storage.service.RemindKafkaService;
 import pet.storage.storage.utility.test.TestUtilities;
 
 import java.time.LocalDate;
@@ -31,6 +39,9 @@ public class ChemicalRepositoryTest {
 
     @Autowired
     TestEntityManager entityManager;
+
+    @MockitoBean
+    private KafkaTemplate<Long, ProductEvent> kafkaTemplate;
 
     @Autowired
     TestUtilities utilities;

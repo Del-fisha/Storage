@@ -13,5 +13,6 @@ public class FoodCrudController extends BaseCrudController<FoodDTO, FoodCrudServ
     @Autowired
     public FoodCrudController(FoodCrudService service) {
         super(service);
+        System.out.println("Food controller initialized");
     }
 }

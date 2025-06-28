@@ -28,16 +28,24 @@ public abstract class BaseCrudController<T, S extends CrudService<T>> {
 
     @GetMapping("/")
     public ResponseEntity<List<T>> getAll() {
+        System.out.println("Get all in BaseCrudController started");
         return ResponseEntity.ok(service.findAll());
     }
 
     @PostMapping("/")
-    public ResponseEntity<T> create(@Valid @RequestBody T dto) {
-        return new ResponseEntity<>(service.save(dto), HttpStatus.CREATED);
+    public ResponseEntity create(@RequestBody T dto) {
+        try {
+            System.out.println("--- Попытка создания DTO в контроллере: " + dto); // Этот лог должен появиться!
+            return new ResponseEntity<>(service.save(dto), HttpStatus.CREATED);
+        } catch (Exception e) {
+            System.err.println("--- ОШИБКА В КОНТРОЛЛЕРЕ! ПРИШЛО ИСКЛЮЧЕНИЕ: " + e.getMessage()); // Этот лог должен появиться!
+            e.printStackTrace(System.err); // А это - полный стек-трейс!
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR); // Возвращаем 500
+        }
     }
 
     @PutMapping("/")
-    public ResponseEntity<T> update(@Valid @RequestBody T dto) {
+    public ResponseEntity<T> update(@RequestBody T dto) {
         return ResponseEntity.ok(service.update(dto));
     }
 

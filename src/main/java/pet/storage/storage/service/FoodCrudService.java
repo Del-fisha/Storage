@@ -17,5 +17,6 @@ public class FoodCrudService extends BaseCrudService<FoodDTO, FoodItem, FoodRepo
                            FoodConverter converter,
                            RemindKafkaService remindKafkaService) {
         super(repository, converter, remindKafkaService);
+        System.out.println("foodCrudService constructor");
     }
 }

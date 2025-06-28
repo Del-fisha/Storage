@@ -20,7 +20,25 @@ public class RemindKafkaService {
         this.eventProducer = eventProducer;
     }
 
-    public void sendItemToRemind(Item item) {
+    public void sendSavedItemToReminder(Item item) {
+        ProductEvent event = sender(item);
+        event.setEventType(ProductEventType.ADD);
+        eventProducer.sendProductEvent(event);
+    }
+
+    public void sendUpdatedItemToReminder(Item item) {
+        ProductEvent event = sender(item);
+        event.setEventType(ProductEventType.UPDATE);
+        eventProducer.sendProductEvent(event);
+    }
+
+    public void sendRemovedItemToReminder(Item item) {
+        ProductEvent event = sender(item);
+        event.setEventType(ProductEventType.DELETE);
+        eventProducer.sendProductEvent(event);
+    }
+
+    public ProductEvent sender(Item item) {
         ProductEvent event = new ProductEvent();
         event.setSourceItemId((long) item.getId());
         event.setName(item.getName());
@@ -35,9 +53,6 @@ public class RemindKafkaService {
             expirationDate = ((ElectricalItem) item).getWarrantyEndDate();
         }
         event.setExpirationDate(expirationDate);
-
-        event.setEventType(ProductEventType.ADD);
-
-        eventProducer.sendProductEvent(event);
+        return event;
     }
 }

@@ -1,7 +1,6 @@
 package pet.storage.storage.service;
 
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import pet.storage.storage.dto.abstract_classes.ItemDTO;
 import pet.storage.storage.exceptions.ItemAlreadyExistsException;
 import pet.storage.storage.exceptions.ItemNotFoundException;
@@ -28,8 +27,6 @@ public abstract class BaseCrudService
     }
 
 
-
-
     @Override
     public T findById(int id) {
         return converter.convert(repository.findById(id).orElseThrow(ItemNotFoundException::new));
@@ -47,6 +44,7 @@ public abstract class BaseCrudService
 
     @Override
     public List<T> findAll() {
+        System.out.println("findAll in BaseCrudService started");
         return repository.findAll().stream()
                 .map(converter::convert)
                 .collect(Collectors.toList());
@@ -60,9 +58,9 @@ public abstract class BaseCrudService
         }
 
         E entity = converter.convert(dto);
-        E savedEntity = repository.save(entity); // СОХРАНЯЕМ РЕЗУЛЬТАТ SAVE
+        E savedEntity = repository.save(entity);
 
-        remindKafkaService.sendItemToRemind(savedEntity);
+        remindKafkaService.sendSavedItemToReminder(savedEntity);
 
         return converter.convert(savedEntity);
     }
@@ -73,12 +71,18 @@ public abstract class BaseCrudService
 
         E updatedEntity = converter.convert(dto);
         updatedEntity.setId(item.getId());
+
+        remindKafkaService.sendUpdatedItemToReminder(updatedEntity);
+
         return converter.convert(repository.save(updatedEntity));
     }
 
     @Override
     public void delete(int id) {
         E item = repository.findById(id).orElseThrow(ItemNotFoundException::new);
+
+        remindKafkaService.sendRemovedItemToReminder(item);
+
         repository.deleteById(id);
     }
 }
